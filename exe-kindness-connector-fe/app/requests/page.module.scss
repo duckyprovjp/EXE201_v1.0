@@ -1,0 +1,144 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 2rem;
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.section {
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+    border-bottom: 2px solid var(--border-subtle);
+    padding-bottom: 0.5rem;
+  }
+}
+
+.empty {
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 2rem;
+  text-align: center;
+  background-color: var(--bg-color-surface);
+  border-radius: var(--radius-lg);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.requestCard {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: var(--shadow-level-1);
+
+  @media (min-width: 640px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  p {
+    color: var(--text-main);
+    font-size: 1rem;
+
+    strong {
+      color: var(--primary);
+    }
+  }
+}
+
+.status {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+
+  &.PENDING {
+    background-color: var(--amber-bg);
+    color: var(--amber-text);
+  }
+  
+  &.ACCEPTED {
+    background-color: var(--success-bg);
+    color: var(--success-text);
+  }
+
+  &.REJECTED {
+    background-color: var(--danger-bg);
+    color: var(--danger);
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.acceptBtn, .rejectBtn, .chatBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.acceptBtn {
+  background-color: var(--primary);
+  color: white;
+
+  &:hover {
+    background-color: var(--primary-hover);
+  }
+}
+
+.rejectBtn {
+  background-color: var(--bg-color-surface);
+  color: var(--danger);
+  border: 1px solid rgba(244, 63, 94, 0.2);
+
+  &:hover {
+    background-color: rgba(244, 63, 94, 0.05);
+  }
+}
+
+.chatBtn {
+  background-color: var(--success-bg);
+  color: var(--success-text);
+
+  &:hover {
+    background-color: #dcfce7;
+  }
+}

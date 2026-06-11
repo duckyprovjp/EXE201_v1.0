@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  /* Colors based on Modern Minimalism Design System */
+  --primary: #00a8ff; /* Electric Blue */
+  --primary-hover: #008ecc;
+  --primary-light: #cde5ff;
+  --primary-light-bg: #f0f8ff;
+  --secondary: #006399;
+  
+  --bg-color: #ffffff; /* surface-container-lowest */
+  --bg-color-alt: #fcf8f9; /* surface */
+  --bg-color-surface: #f6f3f4; /* surface-container-low */
+  
+  --text-main: #1b1b1c; /* on-surface */
+  --text-muted: #3e4852; /* on-surface-variant */
+  
+  --border-color: #e5e2e3; /* surface-container-highest */
+  --border-subtle: #f0edee;
+  
+  --danger: #ba1a1a;
+  --danger-bg: #ffdad6;
+  
+  --success-text: #166534;
+  --success-bg: #dcfce7;
+  
+  --amber-text: #b45309;
+  --amber-bg: #fef3c7;
+
+  /* Shadows */
+  --shadow-level-1: 0px 2px 12px rgba(0, 0, 0, 0.04);
+  --shadow-level-2: 0px 8px 24px rgba(0, 0, 0, 0.08);
+
+  /* Border Radius */
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-full: 9999px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #121212;
+    --bg-color-alt: #1e1e1e;
+    --bg-color-surface: #2c2c2c;
+    
+    --text-main: #f3f0f1;
+    --text-muted: #a0a0a0;
+    
+    --border-color: #303031;
+    --border-subtle: #242424;
+
+    --primary-light-bg: rgba(0, 168, 255, 0.15);
+    --danger-bg: rgba(186, 26, 26, 0.15);
+    --success-bg: rgba(22, 163, 74, 0.15);
+    --success-text: #4ade80;
+    --amber-bg: rgba(217, 119, 6, 0.15);
+    --amber-text: #fbbf24;
+
+    --shadow-level-1: 0px 2px 12px rgba(0, 0, 0, 0.2);
+    --shadow-level-2: 0px 8px 24px rgba(0, 0, 0, 0.4);
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color-alt);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 2rem;
+  }
+}
+
+.text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
