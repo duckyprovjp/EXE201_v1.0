@@ -32,10 +32,11 @@
   --shadow-level-2: 0px 8px 24px rgba(0, 0, 0, 0.08);
 
   /* Border Radius */
-  --radius-sm: 0.5rem;
-  --radius-md: 1rem;
-  --radius-lg: 1.5rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
   --radius-full: 9999px;
+  --card-radius: 1.5rem;
 }
 
 @media (prefers-color-scheme: dark) {
