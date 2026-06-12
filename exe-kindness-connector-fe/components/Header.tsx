@@ -1,68 +1,101 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BookOpen, MessageCircle, Gift, Plus, LogOut, Crown, Bell } from "lucide-react";
+import { MessageCircle, Plus, LogOut, Crown, Bell } from "lucide-react";
 import { motion } from "framer-motion";
 import axios from "axios";
 import styles from "./Header.module.scss";
+
+type StoredAuth = {
+  isLoggedIn: boolean;
+  token: string;
+  avatar?: string;
+  role?: string;
+};
+
+const parseStoredAuth = (): StoredAuth | null => {
+  if (typeof window === "undefined") return null;
+
+  const stored = localStorage.getItem("bookshare_auth_v3");
+  if (!stored) return null;
+
+  try {
+    const parsed = JSON.parse(stored) as Partial<StoredAuth>;
+    if (!parsed?.isLoggedIn || !parsed?.token) return null;
+
+    return {
+      isLoggedIn: true,
+      token: parsed.token,
+      avatar: parsed.avatar,
+      role: parsed.role,
+    };
+  } catch {
+    return null;
+  }
+};
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [points, setPoints] = useState(0);
   const [isPremium, setIsPremium] = useState(false);
-  const [auth, setAuth] = useState<any>(null);
+  const [auth, setAuth] = useState<StoredAuth | null>(null);
+
+  const clearAuthState = useCallback(() => {
+    if (typeof window === "undefined") return;
+
+    localStorage.removeItem("bookshare_auth_v3");
+    setAuth(null);
+    setPoints(0);
+    setIsPremium(false);
+  }, []);
 
   useEffect(() => {
-    const fetchUserData = async (token: string) => {
+    const fetchUserData = async (token: string, candidateAuth: StoredAuth) => {
       try {
         const res = await axios.get("http://localhost:3000/user/me", {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
+
+        setAuth(candidateAuth);
         setPoints(res.data.points || 0);
         setIsPremium(res.data.isPremium || false);
-      } catch (err) {
-        console.error("Failed to fetch user data", err);
+      } catch (error: unknown) {
+        console.error("Failed to fetch user data", error);
+        if (axios.isAxiosError(error) && (error.response?.status === 401 || error.response?.status === 403)) {
+          clearAuthState();
+        }
       }
     };
 
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("bookshare_auth_v3");
-      if (stored) {
-        const authData = JSON.parse(stored);
-        setAuth(authData);
-        fetchUserData(authData.token);
+    const initializeAuth = async () => {
+      const storedAuth = parseStoredAuth();
+      if (!storedAuth) {
+        clearAuthState();
+        return;
       }
-    }
-    
+
+      await fetchUserData(storedAuth.token, storedAuth);
+    };
+
+    void initializeAuth();
+
     const handleAuthUpdate = () => {
-      const stored = localStorage.getItem("bookshare_auth_v3");
-      if (stored) {
-        const authData = JSON.parse(stored);
-        setAuth(authData);
-        fetchUserData(authData.token);
-      } else {
-        setAuth(null);
-        setPoints(0);
-        setIsPremium(false);
-      }
+      void initializeAuth();
     };
 
     window.addEventListener("auth-updated", handleAuthUpdate);
     return () => {
       window.removeEventListener("auth-updated", handleAuthUpdate);
     };
-  }, []);
+  }, [clearAuthState]);
 
   const handleLogout = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("bookshare_auth_v3");
-      setAuth(null);
-      window.dispatchEvent(new Event("auth-updated"));
-      router.push("/login");
-    }
+    clearAuthState();
+    window.dispatchEvent(new Event("auth-updated"));
+    router.push("/login");
   };
 
   const isChatRoom = pathname.startsWith("/chat/") && pathname !== "/chat";
@@ -83,9 +116,6 @@ export default function Header() {
         <div className={styles.headerContainer}>
           <div className={styles.leftSection}>
             <Link href="/" className={styles.brand}>
-              <div className={styles.brandIcon}>
-                <BookOpen size={18} strokeWidth={2.5} />
-              </div>
               <span className={styles.brandName}>Kindness Connector</span>
             </Link>
           </div>
@@ -95,79 +125,69 @@ export default function Header() {
   }
 
   return (
-    <>
-      <header className={styles.header}>
-        <div className={styles.headerContainer}>
-          {/* Brand Logo */}
-          <div className={styles.leftSection}>
-            <Link href="/" className={styles.brand}>
-              <div className={styles.brandIcon}>
-                <BookOpen size={18} strokeWidth={2.5} />
+    <header className={styles.header}>
+      <div className={styles.headerContainer}>
+        <div className={styles.leftSection}>
+          <Link href="/" className={styles.brand}>
+            <span className={styles.brandName}>Kindness Connector</span>
+          </Link>
+
+          <nav className={styles.desktopNav}>
+            {navItems.map((item) => {
+              const isActive = pathname === item.path || (item.path !== "/" && pathname.startsWith(item.path));
+
+              return (
+                <Link
+                  key={item.name}
+                  href={item.path}
+                  className={`${styles.navItem} ${isActive ? styles.navItemActive : ""}`}
+                >
+                  <span>{item.name}</span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="active-indicator"
+                      className={styles.activeIndicator}
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        <div className={styles.rightSection}>
+          {auth?.isLoggedIn ? (
+            <>
+              <div className={styles.pointsPill} onClick={() => router.push("/rewards")}>
+                <span>🪙</span>
+                <span>{points} pts</span>
               </div>
-              <span className={styles.brandName}>Kindness Connector</span>
-            </Link>
 
-            {/* Desktop Navigation Links */}
-            <nav className={styles.desktopNav}>
-              {navItems.map((item) => {
-                const isActive = pathname === item.path || (item.path !== "/" && pathname.startsWith(item.path));
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.path}
-                    className={`${styles.navItem} ${isActive ? styles.navItemActive : ""}`}
-                  >
-                    <span>{item.name}</span>
-                    {isActive && (
-                      <motion.div
-                        layoutId="active-indicator"
-                        className={styles.activeIndicator}
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
+              <Link
+                href="/requests"
+                className={`${styles.chatIcon} ${pathname.startsWith("/requests") ? styles.chatIconActive : ""}`}
+                title="Quản lý lượt xin"
+              >
+                <Bell size={18} />
+              </Link>
 
-          {/* Right Section Actions */}
-          <div className={styles.rightSection}>
-            {/* Points Pill */}
-            <div className={styles.pointsPill} onClick={() => router.push("/rewards")}>
-              <span>🪙</span>
-              <span>{points} pts</span>
-            </div>
+              <Link
+                href="/chat"
+                className={`${styles.chatIcon} ${pathname.startsWith("/chat") ? styles.chatIconActive : ""}`}
+                title="Tin nhắn"
+              >
+                <MessageCircle size={18} />
+                <span className={styles.chatBadge} />
+              </Link>
 
-            {/* Requests Icon */}
-            <Link
-              href="/requests"
-              className={`${styles.chatIcon} ${pathname.startsWith("/requests") ? styles.chatIconActive : ""}`}
-              title="Quản lý lượt xin"
-            >
-              <Bell size={18} />
-            </Link>
+              <Link href="/post" className={styles.postButton}>
+                <Plus size={14} />
+                <span>Đăng sách</span>
+              </Link>
 
-            {/* Chat Icon */}
-            <Link
-              href="/chat"
-              className={`${styles.chatIcon} ${pathname.startsWith("/chat") ? styles.chatIconActive : ""}`}
-              title="Tin nhắn"
-            >
-              <MessageCircle size={18} />
-              <span className={styles.chatBadge} />
-            </Link>
+              <div className={styles.divider} />
 
-            {/* Post Action Button (Desktop Only) */}
-            <Link href="/post" className={styles.postButton}>
-              <Plus size={14} />
-              <span>Đăng sách</span>
-            </Link>
-
-            <div className={styles.divider} />
-
-            {/* Profile Avatar */}
-            {auth?.isLoggedIn ? (
               <div className={styles.profileSection}>
                 <Link href="/profile" className={styles.avatar}>
                   <img src={auth.avatar || "https://i.pravatar.cc/150?u=99"} alt="Avatar" />
@@ -181,14 +201,19 @@ export default function Header() {
                   <LogOut size={16} />
                 </button>
               </div>
-            ) : (
+            </>
+          ) : (
+            <div className={styles.authActions}>
               <Link href="/login" className={styles.loginButton}>
-                Đăng nhập
+                Đăng nhập để trao đổi
               </Link>
-            )}
-          </div>
+              <Link href="/register" className={styles.registerButton}>
+                Đăng ký ngay
+              </Link>
+            </div>
+          )}
         </div>
-      </header>
-    </>
+      </div>
+    </header>
   );
 }

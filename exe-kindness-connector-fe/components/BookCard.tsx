@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { MapPin, Users, Star, Heart } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import styles from "./BookCard.module.scss";
@@ -14,6 +13,7 @@ export interface Book {
   description: string;
   images: string[];
   codition: string; // Misspelled in backend
+  category?: string; // Add category if available
   location: {
     city?: string;
     district?: string;
@@ -40,23 +40,23 @@ export default function BookCard({ book }: { book: Book }) {
   const ownerId = book.owner?._id || book.owner;
   const isOwner = auth && ownerId === auth.id;
 
-  // Mock rating based on view count since backend doesn't have it yet
-  const rating = 4.5 + (book.viewCount % 5) * 0.1;
-  const requestsCount = book.viewCount || 2;
-
-  const conditionText = book.codition ? book.codition.toUpperCase() : "AVAILABLE";
-  let conditionClass = styles.conditionGood;
-  if (conditionText.includes("NEW")) {
-    conditionClass = styles.conditionNew;
-  } else if (conditionText.includes("OLD") || conditionText.includes("USED")) {
-    conditionClass = styles.conditionOld;
+  const conditionText = book.codition ? book.codition.toUpperCase() : "CÓ SẴN";
+  let statusClass = styles.statusAvailable;
+  let displayStatus = "Có sẵn";
+  
+  if (book.status?.toUpperCase() === "PENDING") {
+    statusClass = styles.statusPending;
+    displayStatus = "Đã có người xin";
   }
+
+  // Mock category for UI demo if not present
+  const categoryText = book.category || "Sách chung";
 
   const cover = book.images && book.images.length > 0 ? book.images[0] : "https://via.placeholder.com/150";
 
   return (
     <motion.div
-      whileHover={{ y: -6, boxShadow: "0 12px 30px rgba(0, 168, 255, 0.08)" }}
+      whileHover={{ y: -6, boxShadow: "0 8px 24px rgba(0, 0, 0, 0.08)" }}
       whileTap={{ scale: 0.98 }}
       className={styles.card}
     >
@@ -65,34 +65,17 @@ export default function BookCard({ book }: { book: Book }) {
           src={cover}
           alt={book.title}
           className={styles.image}
-          style={{ width: "100%", height: "100%" }}
           onError={(e) => {
             (e.target as HTMLImageElement).src = "https://ui-avatars.com/api/?name=Book&background=random";
           }}
         />
-        
-        <div className={`${styles.conditionBadge} ${conditionClass}`}>
-          {conditionText}
-        </div>
-
-        {isOwner ? (
-          <div className={styles.requestsBadge}>
-            <Users size={10} />
-            {requestsCount} lượt xin
-          </div>
-        ) : (
-          <button className={styles.favoriteButton}>
-            <Heart size={14} />
-          </button>
-        )}
       </Link>
 
       <div className={styles.content}>
-        <div className={styles.ratingRow}>
-          <div className={styles.rating}>
-            <Star size={12} className={styles.starIcon} />
-            <span>{rating.toFixed(1)}</span>
-            <span className={styles.reviewsCount}>({requestsCount})</span>
+        <div className={styles.metaRow}>
+          <div className={styles.categoryBadge}>{categoryText}</div>
+          <div className={`${styles.statusBadge} ${statusClass}`}>
+            {displayStatus}
           </div>
         </div>
 
@@ -101,33 +84,27 @@ export default function BookCard({ book }: { book: Book }) {
         </Link>
         <p className={styles.author}>{book.author}</p>
 
-        <div className={styles.footer}>
-          <div className={styles.ownerInfo}>
-            <div className={styles.avatar}>
-              <img
-                src={book.owner?.avatar || "https://ui-avatars.com/api/?name=User&background=random"}
-                alt={book.owner?.fullName || "Người dùng"}
-                className={styles.avatarImg}
-                style={{ width: "100%", height: "100%" }}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = "https://ui-avatars.com/api/?name=User&background=random";
-                }}
-              />
-            </div>
-            <span className={styles.ownerName}>
-              {isOwner ? "Bạn" : book.owner?.fullName || "Người dùng"}
-            </span>
+        <div className={styles.ownerInfo}>
+          <div className={styles.avatar}>
+            <img
+              src={book.owner?.avatar || "https://ui-avatars.com/api/?name=User&background=random"}
+              alt={book.owner?.fullName || "Người dùng"}
+              className={styles.avatarImg}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "https://ui-avatars.com/api/?name=User&background=random";
+              }}
+            />
           </div>
-          {!isOwner && (
-            <span className={styles.location}>
-              <MapPin size={10} className={styles.pinIcon} />
-              {book.location?.district || "Hà Nội"}
-            </span>
-          )}
+          <span className={styles.ownerName}>
+            {isOwner ? "Sách của Bạn" : `Sở hữu bởi ${book.owner?.fullName || "Người dùng"}`}
+          </span>
         </div>
 
         <div className={styles.actionRow}>
-          <Link href={`/books/${book._id}`} className={styles.actionButton}>
+          <Link 
+            href={`/books/${book._id}`} 
+            className={`${styles.actionButton} ${isOwner ? styles.btnOutline : styles.btnPrimary}`}
+          >
             {isOwner ? "Quản lý lượt xin" : "Nhận sách miễn phí"}
           </Link>
         </div>
