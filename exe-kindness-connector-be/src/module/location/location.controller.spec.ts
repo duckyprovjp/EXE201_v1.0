@@ -9,7 +9,7 @@ describe('LocationController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [LocationController],
       providers: [LocationService],
-    }).compile();
+    }).useMocker(() => ({})).compile();
 
     controller = module.get<LocationController>(LocationController);
   });

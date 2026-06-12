@@ -11,11 +11,24 @@ export class ChatService {
     @InjectModel(Message.name) private messageModel: Model<Message>,
   ) {}
 
-  async createRoom(participants: string[], exchangeId: string) {
+  async getOrCreateRoom(participants: string[]) {
+    // Find a room that contains EXACTLY these participants.
+    // Assuming participants array always has exactly 2 members.
+    const existingRoom = await this.chatRoomModel.findOne({
+      participants: { $all: participants, $size: participants.length }
+    });
+
+    if (existingRoom) {
+      return existingRoom;
+    }
+
     return this.chatRoomModel.create({
       participants,
-      exchangeId,
     });
+  }
+
+  async updateActiveExchange(roomId: string, exchangeId: string) {
+    return this.chatRoomModel.findByIdAndUpdate(roomId, { activeExchange: exchangeId }, { new: true });
   }
 
   async getRoomsForUser(userId: string) {
@@ -23,7 +36,8 @@ export class ChatService {
       .find({ participants: userId })
       .populate('participants', 'fullName avatar')
       .populate({
-        path: 'exchangeId',
+        path: 'activeExchange',
+        select: 'status book',
         populate: { path: 'book', select: 'title images' }
       })
       .sort({ updatedAt: -1 });
@@ -37,10 +51,26 @@ export class ChatService {
   }
 
   async saveMessage(roomId: string, senderId: string, content: string) {
+    const room = await this.chatRoomModel.findById(roomId).populate('activeExchange');
+    if (room && room.activeExchange) {
+      const exchangeStatus = (room.activeExchange as any).status;
+      if (exchangeStatus === 'CANCELED' || exchangeStatus === 'COMPLETED') {
+        throw new Error('Giao dịch đã kết thúc, bạn không thể gửi thêm tin nhắn.');
+      }
+    }
+
     return this.messageModel.create({
       roomId,
       senderId,
       content,
+    });
+  }
+
+  async saveSystemMessage(roomId: string, content: string) {
+    return this.messageModel.create({
+      roomId,
+      content,
+      isSystem: true,
     });
   }
 }

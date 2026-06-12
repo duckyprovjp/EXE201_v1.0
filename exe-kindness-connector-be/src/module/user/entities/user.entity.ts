@@ -17,10 +17,10 @@ export class User {
   @Prop()
   fullName!: string;
 
-  @Prop()
+  @Prop({ type: String, enum: UserRole })
   role!: UserRole;
 
-  @Prop()
+  @Prop({ type: String, enum: Status_ACTIVE_LOCKED })
   status!: Status_ACTIVE_LOCKED;
 
   @Prop()
@@ -36,6 +36,9 @@ export class User {
 
   @Prop({ default: false })
   isPremium!: boolean;
+
+  @Prop({ default: 0 })
+  reputationScore!: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

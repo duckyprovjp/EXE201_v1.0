@@ -9,7 +9,7 @@ export class Location {
   @Prop()
   name!: string;
 
-  @Prop()
+  @Prop({ type: String, enum: LocationType })
   type!: LocationType;
 
   @Prop({

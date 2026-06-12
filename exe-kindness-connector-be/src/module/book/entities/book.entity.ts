@@ -32,7 +32,7 @@ export class Book {
   @Prop()
   images!: string[];
 
-  @Prop()
+  @Prop({ type: String, enum: Condition })
   codition!: Condition;
 
   @Prop({
@@ -46,7 +46,7 @@ export class Book {
   })
   owner!: mongoose.Types.ObjectId;
 
-  @Prop()
+  @Prop({ type: String, enum: Book_Status })
   status!: Book_Status;
 
   @Prop()

@@ -9,7 +9,7 @@ describe('MembershipRecordController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MembershipRecordController],
       providers: [MembershipRecordService],
-    }).compile();
+    }).useMocker(() => ({})).compile();
 
     controller = module.get<MembershipRecordController>(MembershipRecordController);
   });

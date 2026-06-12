@@ -7,7 +7,7 @@ describe('ExchangeRequestService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [ExchangeRequestService],
-    }).compile();
+    }).useMocker(() => ({})).compile();
 
     service = module.get<ExchangeRequestService>(ExchangeRequestService);
   });

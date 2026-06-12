@@ -159,6 +159,21 @@
   }
 }
 
+.systemMessage {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+
+  span {
+    background-color: var(--border-subtle);
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-full);
+    font-style: italic;
+  }
+}
+
 .msgAvatar {
   width: 1.75rem;
   height: 1.75rem;
@@ -221,6 +236,49 @@
   &:disabled {
     background-color: var(--border-color);
     cursor: not-allowed;
+  }
+}
+
+.lockedMessage {
+  padding: 1rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+  background-color: var(--bg-color-surface);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.chatActions {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+
+  button {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+
+    &.completeBtn {
+      background-color: var(--primary);
+      color: white;
+      &:hover { background-color: var(--primary-hover); }
+    }
+
+    &.cancelBtn {
+      background-color: #ef4444; /* red-500 */
+      color: white;
+      &:hover { background-color: #dc2626; }
+    }
+
+    &.rateBtn {
+      background-color: #f59e0b; /* amber-500 */
+      color: white;
+      &:hover { background-color: #d97706; }
+    }
   }
 }
 

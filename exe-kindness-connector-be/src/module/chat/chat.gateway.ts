@@ -44,14 +44,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: { roomId: string; senderId: string; content: string },
   ) {
-    // Save message to DB
-    const message = await this.chatService.saveMessage(
-      payload.roomId,
-      payload.senderId,
-      payload.content,
-    );
+    try {
+      // Save message to DB
+      const message = await this.chatService.saveMessage(
+        payload.roomId,
+        payload.senderId,
+        payload.content,
+      );
 
-    // Broadcast to everyone in the room (including sender to confirm)
-    this.server.to(payload.roomId).emit('newMessage', message);
+      // Broadcast to everyone in the room (including sender to confirm)
+      this.server.to(payload.roomId).emit('newMessage', message);
+    } catch (error: any) {
+      client.emit('errorMessage', { message: error.message || 'Error sending message' });
+    }
   }
 }

@@ -8,7 +8,7 @@ export class BookCategory {
   @Prop()
   name!: string;
 
-  @Prop()
+  @Prop({ type: String, enum: CategoryType })
   type!: CategoryType;
 }
 export const BookCategorySchema = SchemaFactory.createForClass(BookCategory);

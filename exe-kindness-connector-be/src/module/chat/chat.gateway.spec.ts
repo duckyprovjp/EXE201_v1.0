@@ -7,7 +7,7 @@ describe('ChatGateway', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [ChatGateway],
-    }).compile();
+    }).useMocker(() => ({})).compile();
 
     gateway = module.get<ChatGateway>(ChatGateway);
   });

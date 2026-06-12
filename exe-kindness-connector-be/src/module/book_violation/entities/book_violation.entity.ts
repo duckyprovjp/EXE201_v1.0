@@ -24,7 +24,7 @@ export class BookViolation {
   @Prop()
   evidenceImages!: string[];
 
-  @Prop()
+  @Prop({ type: String, enum: BookViolation_Status })
   status!: BookViolation_Status;
 }
 export const BookViolationSchema = SchemaFactory.createForClass(BookViolation)

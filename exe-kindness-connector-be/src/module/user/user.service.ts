@@ -100,4 +100,15 @@ export class UserService {
     user.isPremium = true;
     return user.save();
   }
+
+  async addExchangePoints(ownerId: string, requesterId: string): Promise<void> {
+    // Owner gets 50 points, Requester gets 25 points (2:1 ratio)
+    await this.userModel.findByIdAndUpdate(ownerId, { $inc: { points: 50 } }).exec();
+    await this.userModel.findByIdAndUpdate(requesterId, { $inc: { points: 25 } }).exec();
+  }
+
+  async addReputationScore(userId: string, ratingScore: number): Promise<void> {
+    // reputationScore increases by the rating given
+    await this.userModel.findByIdAndUpdate(userId, { $inc: { reputationScore: ratingScore } }).exec();
+  }
 }

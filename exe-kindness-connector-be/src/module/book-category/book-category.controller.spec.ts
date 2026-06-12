@@ -9,7 +9,7 @@ describe('BookCategoryController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [BookCategoryController],
       providers: [BookCategoryService],
-    }).compile();
+    }).useMocker(() => ({})).compile();
 
     controller = module.get<BookCategoryController>(BookCategoryController);
   });

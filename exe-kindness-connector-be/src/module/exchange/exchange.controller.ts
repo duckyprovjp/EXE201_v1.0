@@ -31,4 +31,14 @@ export class ExchangeController {
   ) {
     return this.exchangeService.updateStatus(id, req.user.userId, status);
   }
+
+  @Patch(':id/cancel')
+  cancel(@Param('id') id: string, @Req() req: any) {
+    return this.exchangeService.cancelExchange(id, req.user.userId);
+  }
+
+  @Patch(':id/complete')
+  complete(@Param('id') id: string, @Req() req: any) {
+    return this.exchangeService.completeExchange(id, req.user.userId);
+  }
 }

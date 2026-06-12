@@ -9,7 +9,7 @@ describe('ExchangeRequestController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ExchangeRequestController],
       providers: [ExchangeRequestService],
-    }).compile();
+    }).useMocker(() => ({})).compile();
 
     controller = module.get<ExchangeRequestController>(ExchangeRequestController);
   });

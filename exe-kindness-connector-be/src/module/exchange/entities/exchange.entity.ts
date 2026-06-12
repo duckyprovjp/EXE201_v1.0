@@ -13,7 +13,7 @@ export class Exchange {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Book', required: true })
   book!: mongoose.Types.ObjectId;
 
-  @Prop({ default: Exchange_Status.PENDING })
+  @Prop({ type: String, enum: Exchange_Status, default: Exchange_Status.PENDING })
   status!: Exchange_Status;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'ChatRoom' })
