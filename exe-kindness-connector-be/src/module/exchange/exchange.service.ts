@@ -15,7 +15,7 @@ export class ExchangeService {
     @InjectModel(User.name) private userModel: Model<User>,
     private chatService: ChatService,
     private chatGateway: ChatGateway,
-  ) {}
+  ) { }
 
   async create(requesterId: string, bookId: string, ownerId: string) {
     if (requesterId === ownerId) {
@@ -47,7 +47,7 @@ export class ExchangeService {
     const requesterName = (populated.requester as any).fullName || 'Một người dùng';
     const bookTitle = (populated.book as any).title || 'sách';
     const msgContent = `${requesterName} vừa yêu cầu trao đổi cuốn sách ${bookTitle}`;
-    
+
     const sysMsg = await this.chatService.saveSystemMessage(chatRoom._id.toString(), msgContent);
     this.chatGateway.server.to(chatRoom._id.toString()).emit('newMessage', sysMsg);
 
@@ -105,7 +105,7 @@ export class ExchangeService {
       const populated = await exchange.populate('book');
       const bookTitle = (populated.book as any).title || 'sách';
       const msgContent = `Giao dịch đổi sách ${bookTitle} đã bị hủy`;
-      
+
       const sysMsg = await this.chatService.saveSystemMessage(exchange.chatRoomId.toString(), msgContent);
       this.chatGateway.server.to(exchange.chatRoomId.toString()).emit('newMessage', sysMsg);
 
@@ -134,9 +134,9 @@ export class ExchangeService {
     exchange.status = Exchange_Status.COMPLETED;
     await exchange.save();
 
-    // Add points: Owner gets 2, Requester gets 1 (from new requirements)
-    await this.userModel.findByIdAndUpdate(exchange.owner.toString(), { $inc: { points: 2 } }).exec();
-    await this.userModel.findByIdAndUpdate(exchange.requester.toString(), { $inc: { points: 1 } }).exec();
+    // Add points: Owner gets 50, Requester gets 25
+    await this.userModel.findByIdAndUpdate(exchange.owner.toString(), { $inc: { points: 50 } }).exec();
+    await this.userModel.findByIdAndUpdate(exchange.requester.toString(), { $inc: { points: 25 } }).exec();
 
     if (exchange.chatRoomId) {
       const msgContent = `Giao dịch thành công!`;
