@@ -1,52 +1,120 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { Search, BookOpen, Filter, MapPin, Compass, GraduationCap, Laptop, Languages, Smile, ChevronRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
+import {
+  BookOpen,
+  ChevronRight,
+  Filter,
+  MapPin,
+  Search,
+} from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import axios from "axios";
+import bookCategories from "../book_categories.json";
 import BookCard, { Book } from "../components/BookCard";
 import styles from "./page.module.scss";
 
-const categories = [
-  { id: "all", name: "Tất cả sách", icon: BookOpen },
-  { id: "vanhoc", name: "Văn học", icon: Compass },
-  { id: "kynang", name: "Kỹ năng", icon: Smile },
-  { id: "khoahoc", name: "Khoa học", icon: Laptop },
-  { id: "giaoduc", name: "Giáo dục", icon: GraduationCap },
-  { id: "ngoai_ngu", name: "Ngoại ngữ", icon: Languages },
-];
+type SubCategory = {
+  name: string;
+  slug: string;
+};
+
+type CategoryGroup = {
+  name: string;
+  slug: string;
+  description: string;
+  subcategories: SubCategory[];
+};
+
+type CategoryRef =
+  | string
+  | {
+    name?: string;
+    slug?: string;
+    type?: string;
+  };
+
+type BookWithCategories = Book & {
+  categories?: CategoryRef[];
+  advancedCategories?: CategoryRef[];
+};
+
+const categoryGroups = bookCategories as CategoryGroup[];
+
+const normalize = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "");
+
+const getRefSlug = (ref: CategoryRef) => {
+  if (typeof ref === "string") return ref;
+  return ref.slug || ref.name || "";
+};
+
+const getBookCategorySlugs = (book: BookWithCategories) => {
+  const topLevel = (book.categories ?? []).map(getRefSlug).filter(Boolean);
+  const advancedLevel = (book.advancedCategories ?? []).map(getRefSlug).filter(Boolean);
+
+  return {
+    topLevel,
+    advancedLevel,
+    all: [...topLevel, ...advancedLevel],
+  };
+};
+
+const includesSlug = (values: string[], slug: string) =>
+  values.some((value) => {
+    const normalizedValue = normalize(value);
+    const normalizedSlug = normalize(slug);
+    return normalizedValue === normalizedSlug || normalizedValue.includes(normalizedSlug);
+  });
+
+const categoryFilterMatches = (
+  book: BookWithCategories,
+  topCategory: string,
+  subCategory: string,
+) => {
+  if (topCategory === "all") return true;
+
+  const { topLevel, advancedLevel, all } = getBookCategorySlugs(book);
+
+  if (subCategory === "all") {
+    return includesSlug(topLevel.length > 0 ? topLevel : all, topCategory);
+  }
+
+  return includesSlug(topLevel, topCategory) && includesSlug(advancedLevel, subCategory);
+};
 
 export default function Home() {
-  const [books, setBooks] = useState<Book[]>([]);
+  const [books, setBooks] = useState<BookWithCategories[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState("Đang tải vị trí...");
 
-  // Filter States
   const [activeRadius, setActiveRadius] = useState("10km");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedTopCategory, setSelectedTopCategory] = useState<string>("all");
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string>("all");
   const [selectedCondition, setSelectedCondition] = useState("all");
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
-
-  useEffect(() => {
-    fetchBooks();
-    fetchUserLocation();
-  }, []);
 
   const fetchUserLocation = async () => {
     try {
       const stored = localStorage.getItem("bookshare_auth_v3");
-      if (stored) {
-        const authData = JSON.parse(stored);
-        const res = await axios.get("http://localhost:3000/user/me", {
-          headers: { Authorization: `Bearer ${authData.token}` }
-        });
-        const addr = res.data.address;
-        if (addr && addr.length > 0) {
-          setUserLocation(`${addr[0].district}, ${addr[0].city}`);
-        } else {
-          setUserLocation("Toàn quốc");
-        }
+      if (!stored) {
+        setUserLocation("Toàn quốc");
+        return;
+      }
+
+      const authData = JSON.parse(stored);
+      const res = await axios.get("http://localhost:3000/user/me", {
+        headers: { Authorization: `Bearer ${authData.token}` },
+      });
+
+      const addr = res.data.address;
+      if (addr && addr.length > 0) {
+        setUserLocation(`${addr[0].district}, ${addr[0].city}`);
       } else {
         setUserLocation("Toàn quốc");
       }
@@ -70,25 +138,32 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void fetchBooks();
+      void fetchUserLocation();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  const activeTopCategory = useMemo(
+    () => categoryGroups.find((category) => category.slug === selectedTopCategory) ?? null,
+    [selectedTopCategory],
+  );
+
   const filteredBooks = useMemo(() => {
     return books.filter((book) => {
-      // Search
-      const matchesSearch = 
-        !searchTerm || 
-        book.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      const matchesSearch =
+        !searchTerm ||
+        book.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         book.author?.toLowerCase().includes(searchTerm.toLowerCase());
 
-      // Category filter (Giả lập map string với các category id)
       let matchesCategory = true;
-      if (selectedCategory !== "all") {
-        // Mock logic vì backend trả về objectId, ở đây tạm giả lập
-        const titleCat = book.title?.toLowerCase() || "";
-        if (selectedCategory === "vanhoc" && !titleCat.includes("văn") && !titleCat.includes("tiểu thuyết")) matchesCategory = false;
-        // Thực tế phần này cần API backend support, hoặc dữ liệu book có chứa label category rõ ràng.
-        // Để demo UI mượt mà, tạm thời giả lập không filter ngắt quãng nếu không match chính xác logic giả.
+      if (selectedTopCategory !== "all" && activeTopCategory) {
+        matchesCategory = categoryFilterMatches(book, selectedTopCategory, selectedSubCategory);
       }
 
-      // Condition filter
       let matchesCondition = true;
       if (selectedCondition !== "all") {
         const cond = book.codition?.toUpperCase() || "";
@@ -97,33 +172,39 @@ export default function Home() {
         if (selectedCondition === "old" && cond !== "OLD") matchesCondition = false;
       }
 
-      // Radius filter: Chờ backend bổ sung tọa độ địa lý. Hiện tại cho phép qua hết.
       const matchesRadius = true;
 
       return matchesSearch && matchesCategory && matchesCondition && matchesRadius;
     });
-  }, [books, searchTerm, selectedCategory, selectedCondition, activeRadius]);
+  }, [books, searchTerm, selectedTopCategory, selectedSubCategory, selectedCondition, activeTopCategory]);
 
   const clearFilters = () => {
     setActiveRadius("10km");
+    setSelectedTopCategory("all");
+    setSelectedSubCategory("all");
     setSelectedCondition("all");
-    setSelectedCategory("all");
     setSearchTerm("");
+  };
+
+  const handleTopCategorySelect = (slug: string) => {
+    setSelectedTopCategory(slug);
+    setSelectedSubCategory("all");
   };
 
   return (
     <div className={styles.pageContainer}>
-      {/* Hero Section */}
       <section className={styles.heroSection}>
         <div className={styles.heroContainer}>
           <div className={styles.heroContent}>
             <div className={styles.heroText}>
               <h1 className={styles.heroTitle}>
-                Trao đổi sách,<br />
+                Trao đổi sách,
+                <br />
                 <span>Chia sẻ tri thức</span>
               </h1>
               <p className={styles.heroDesc}>
-                Tham gia cộng đồng những người đọc sách trên toàn quốc. Biến những cuốn sách bạn đã đọc xong thành những chuyến phiêu lưu mới mà không tốn một xu.
+                Tham gia cộng đồng những người đọc sách trên toàn quốc. Biến những cuốn sách
+                bạn đã đọc xong thành những chuyến phiêu lưu mới mà không tốn một xu.
               </p>
 
               <div className={styles.searchBox}>
@@ -138,10 +219,7 @@ export default function Home() {
                   />
                 </div>
                 {searchTerm && (
-                  <button 
-                    onClick={() => setSearchTerm("")} 
-                    className={styles.clearButton}
-                  >
+                  <button onClick={() => setSearchTerm("")} className={styles.clearButton}>
                     Xóa lọc
                   </button>
                 )}
@@ -152,11 +230,11 @@ export default function Home() {
                 <button className={styles.btnOutline}>Cách hoạt động</button>
               </div>
             </div>
-            
+
             <div className={styles.heroImagePlaceholder}>
               <div className={styles.placeholderBox}>
                 <div className={styles.placeholderBadge}>
-                  <div className={styles.badgeIcon}>📖</div>
+                  <div className={styles.placeholderIcon}>📚</div>
                   <div className={styles.badgeText}>
                     <span>Lượt trao đổi</span>
                     <strong>12,450+</strong>
@@ -168,59 +246,118 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Categories Bar */}
       <section className={styles.categoriesSection}>
         <div className={styles.categoriesHeader}>
-          <h2>Khám phá theo thể loại</h2>
-          <span className={styles.viewAllCat}>Tất cả {categories.length - 1} danh mục <ChevronRight size={14} /></span>
+          <div>
+            <h2>Phân loại sách</h2>
+          </div>
+          {selectedTopCategory !== "all" && (
+            <button onClick={clearFilters} className={styles.viewAllCat}>
+              Xem tất cả <ChevronRight size={14} />
+            </button>
+          )}
         </div>
-        <div className={styles.categoriesScroll}>
-          {categories.map((cat) => {
-            const CatIcon = cat.icon;
-            const isSelected = selectedCategory === cat.id;
+
+        <div className={styles.categoryGrid}>
+          {categoryGroups.map((category, index) => {
+            const isActive = selectedTopCategory === category.slug;
+
             return (
               <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`${styles.categoryPill} ${isSelected ? styles.categoryActive : ""}`}
+                key={category.slug}
+                onClick={() => handleTopCategorySelect(category.slug)}
+                className={`${styles.categoryCard} ${isActive ? styles.categoryCardActive : ""}`}
               >
-                <CatIcon size={16} />
-                {cat.name}
+                <div className={styles.categoryCardHead}>
+                  <span className={styles.categoryIndex}>0{index + 1}</span>
+                  <span className={`${styles.categoryChevron} ${isActive ? styles.categoryChevronActive : ""}`}>
+                    <ChevronRight size={16} />
+                  </span>
+                </div>
+                <h3>{category.name}</h3>
+                <p>{category.description}</p>
+                <span>{category.subcategories.length} danh mục con</span>
               </button>
             );
           })}
         </div>
+
+        <AnimatePresence mode="wait">
+          {activeTopCategory && (
+            <motion.div
+              key={activeTopCategory.slug}
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className={styles.subcategoryPanel}
+            >
+              <div className={styles.subcategoryPanelHeader}>
+                <div>
+                  <h3>{activeTopCategory.name}</h3>
+                  <p>{activeTopCategory.description}</p>
+                </div>
+                <button onClick={() => handleTopCategorySelect("all")} className={styles.panelReset}>
+                  Bỏ chọn
+                </button>
+              </div>
+
+              <div className={styles.subcategoryChips}>
+                <button
+                  onClick={() => setSelectedSubCategory("all")}
+                  className={`${styles.subcategoryChip} ${selectedSubCategory === "all" ? styles.subcategoryChipActive : ""
+                    }`}
+                >
+                  Tất cả
+                </button>
+                {activeTopCategory.subcategories.map((subCategory) => {
+                  const isActive = selectedSubCategory === subCategory.slug;
+
+                  return (
+                    <button
+                      key={subCategory.slug}
+                      onClick={() => setSelectedSubCategory(subCategory.slug)}
+                      className={`${styles.subcategoryChip} ${isActive ? styles.subcategoryChipActive : ""
+                        }`}
+                    >
+                      {subCategory.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
 
-      {/* Main Grid Section with Sidebar */}
       <section className={styles.mainGridSection}>
         <div className={styles.gridContainer}>
-          
-          {/* LEFT: Desktop Sidebar Filter */}
           <aside className={styles.desktopSidebar}>
             <div className={styles.filterBox}>
               <div className={styles.filterHeader}>
-                <h3><Filter size={16} /> Bộ lọc tìm kiếm</h3>
-                <button onClick={clearFilters} className={styles.btnClearFilter}>Xóa lọc</button>
+                <h3>
+                  <Filter size={16} /> Bộ lọc tìm kiếm
+                </h3>
+                <button onClick={clearFilters} className={styles.btnClearFilter}>
+                  Xóa lọc
+                </button>
               </div>
 
-              {/* Distance */}
               <div className={styles.filterGroup}>
                 <h4>Bán kính xung quanh</h4>
                 <div className={styles.filterGrid2}>
-                  {["1km", "3km", "5km", "10km"].map((rad) => (
+                  {["1km", "3km", "5km", "10km"].map((radius) => (
                     <button
-                      key={rad}
-                      onClick={() => setActiveRadius(rad)}
-                      className={`${styles.filterBtn} ${activeRadius === rad ? styles.filterBtnActive : ""}`}
+                      key={radius}
+                      onClick={() => setActiveRadius(radius)}
+                      className={`${styles.filterBtn} ${activeRadius === radius ? styles.filterBtnActive : ""}`}
                     >
-                      {rad}
+                      {radius}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Condition */}
               <div className={styles.filterGroup}>
                 <h4>Tình trạng sách</h4>
                 <div className={styles.filterGridCol}>
@@ -228,22 +365,22 @@ export default function Home() {
                     { id: "all", label: "Tất cả" },
                     { id: "new", label: "Sách mới / Như mới" },
                     { id: "good", label: "Sách cũ còn tốt" },
-                    { id: "old", label: "Sách đã cũ" }
-                  ].map((cond) => (
+                    { id: "old", label: "Sách đã cũ" },
+                  ].map((condition) => (
                     <button
-                      key={cond.id}
-                      onClick={() => setSelectedCondition(cond.id)}
-                      className={`${styles.filterBtnRow} ${selectedCondition === cond.id ? styles.filterBtnActive : ""}`}
+                      key={condition.id}
+                      onClick={() => setSelectedCondition(condition.id)}
+                      className={`${styles.filterBtnRow} ${selectedCondition === condition.id ? styles.filterBtnActive : ""
+                        }`}
                     >
-                      {cond.label}
+                      {condition.label}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Location */}
               <div className={styles.locationBox}>
-                <p>VỊ TRÍ HIỆN TẠI</p>
+                <p>Vị trí hiện tại</p>
                 <div className={styles.locationTag}>
                   <MapPin size={14} className={styles.pinIcon} />
                   <span>{userLocation}</span>
@@ -252,13 +389,12 @@ export default function Home() {
             </div>
           </aside>
 
-          {/* RIGHT: Results */}
           <div className={styles.resultsArea}>
             <div className={styles.sectionHeader}>
               <p className={styles.resultsCount}>
                 Tìm thấy <span>{filteredBooks.length}</span> cuốn sách
               </p>
-              
+
               <button onClick={() => setMobileFilterOpen(true)} className={styles.mobileFilterBtn}>
                 <Filter size={14} /> Bộ lọc
               </button>
@@ -283,9 +419,7 @@ export default function Home() {
                   <BookOpen size={24} />
                 </div>
                 <h3>Không tìm thấy sách nào</h3>
-                <p>
-                  Hãy thử thay đổi từ khóa tìm kiếm hoặc mở rộng bộ lọc của bạn.
-                </p>
+                <p>Hãy thử thay đổi từ khóa tìm kiếm hoặc mở rộng bộ lọc của bạn.</p>
                 <button onClick={clearFilters} className={styles.btnPrimary}>
                   Xóa bộ lọc
                 </button>
@@ -295,7 +429,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Mobile Filter Drawer */}
       <AnimatePresence>
         {mobileFilterOpen && (
           <>
@@ -314,31 +447,83 @@ export default function Home() {
               className={styles.mobileDrawer}
             >
               <div className={styles.drawerHandle} />
-              
+
               <div className={styles.filterHeader}>
-                <h3><Filter size={18} /> Bộ lọc sách</h3>
-                <button onClick={() => { clearFilters(); setMobileFilterOpen(false); }} className={styles.btnClearFilterRed}>
+                <h3>
+                  <Filter size={18} /> Bộ lọc sách
+                </h3>
+                <button
+                  onClick={() => {
+                    clearFilters();
+                    setMobileFilterOpen(false);
+                  }}
+                  className={styles.btnClearFilterRed}
+                >
                   Xóa lọc
                 </button>
               </div>
 
-              {/* Radius */}
+              <div className={styles.filterGroup}>
+                <h4>Phân loại cấp 1</h4>
+                <div className={styles.mobileCategoryStack}>
+                  {categoryGroups.map((category) => {
+                    const isActive = selectedTopCategory === category.slug;
+
+                    return (
+                      <button
+                        key={category.slug}
+                        onClick={() => handleTopCategorySelect(category.slug)}
+                        className={`${styles.mobileCategoryCard} ${isActive ? styles.mobileCategoryCardActive : ""
+                          }`}
+                      >
+                        <strong>{category.name}</strong>
+                        <span>{category.description}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {activeTopCategory && (
+                <div className={styles.filterGroup}>
+                  <h4>Phân loại cấp 2</h4>
+                  <div className={styles.filterGrid2}>
+                    <button
+                      onClick={() => setSelectedSubCategory("all")}
+                      className={`${styles.filterBtn} ${selectedSubCategory === "all" ? styles.filterBtnActive : ""
+                        }`}
+                    >
+                      Tất cả
+                    </button>
+                    {activeTopCategory.subcategories.map((subCategory) => (
+                      <button
+                        key={subCategory.slug}
+                        onClick={() => setSelectedSubCategory(subCategory.slug)}
+                        className={`${styles.filterBtn} ${selectedSubCategory === subCategory.slug ? styles.filterBtnActive : ""
+                          }`}
+                      >
+                        {subCategory.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className={styles.filterGroup}>
                 <h4>Bán kính xung quanh</h4>
                 <div className={styles.filterGrid4}>
-                  {["1km", "3km", "5km", "10km"].map((rad) => (
+                  {["1km", "3km", "5km", "10km"].map((radius) => (
                     <button
-                      key={rad}
-                      onClick={() => setActiveRadius(rad)}
-                      className={`${styles.filterBtn} ${activeRadius === rad ? styles.filterBtnActive : ""}`}
+                      key={radius}
+                      onClick={() => setActiveRadius(radius)}
+                      className={`${styles.filterBtn} ${activeRadius === radius ? styles.filterBtnActive : ""}`}
                     >
-                      {rad}
+                      {radius}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Condition */}
               <div className={styles.filterGroup}>
                 <h4>Tình trạng sách</h4>
                 <div className={styles.filterGrid2}>
@@ -346,30 +531,35 @@ export default function Home() {
                     { id: "all", label: "Tất cả" },
                     { id: "new", label: "Mới / Như mới" },
                     { id: "good", label: "Còn tốt" },
-                    { id: "old", label: "Đã cũ" }
-                  ].map((cond) => (
+                    { id: "old", label: "Đã cũ" },
+                  ].map((condition) => (
                     <button
-                      key={cond.id}
-                      onClick={() => setSelectedCondition(cond.id)}
-                      className={`${styles.filterBtn} ${selectedCondition === cond.id ? styles.filterBtnActive : ""}`}
+                      key={condition.id}
+                      onClick={() => setSelectedCondition(condition.id)}
+                      className={`${styles.filterBtn} ${selectedCondition === condition.id ? styles.filterBtnActive : ""
+                        }`}
                     >
-                      {cond.label}
+                      {condition.label}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <button
-                onClick={() => setMobileFilterOpen(false)}
-                className={styles.btnPrimaryFull}
-              >
+              <div className={styles.locationBox}>
+                <p>Vị trí hiện tại</p>
+                <div className={styles.locationTag}>
+                  <MapPin size={14} className={styles.pinIcon} />
+                  <span>{userLocation}</span>
+                </div>
+              </div>
+
+              <button onClick={() => setMobileFilterOpen(false)} className={styles.btnPrimaryFull}>
                 Áp dụng bộ lọc
               </button>
             </motion.div>
           </>
         )}
       </AnimatePresence>
-
     </div>
   );
 }

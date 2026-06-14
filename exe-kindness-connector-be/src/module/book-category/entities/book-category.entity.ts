@@ -8,6 +8,9 @@ export class BookCategory {
   @Prop()
   name!: string;
 
+  @Prop()
+  slug!: string;
+
   @Prop({ type: String, enum: CategoryType })
   type!: CategoryType;
 }

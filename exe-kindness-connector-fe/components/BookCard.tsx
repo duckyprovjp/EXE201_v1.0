@@ -1,56 +1,84 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import styles from "./BookCard.module.scss";
 
-// Define the book interface based on backend entity
 export interface Book {
   _id: string;
   title: string;
   author: string;
   description: string;
   images: string[];
-  codition: string; // Misspelled in backend
-  category?: string; // Add category if available
+  codition: string;
+  category?: string;
+  categories?: Array<{ name?: string; slug?: string; type?: string } | string>;
+  advancedCategories?: Array<{ name?: string; slug?: string; type?: string } | string>;
   location: {
     city?: string;
     district?: string;
     ward?: string;
     street?: string;
   };
-  owner: any;
+  owner?:
+    | {
+        _id?: string;
+        avatar?: string;
+        fullName?: string;
+      }
+    | string
+    | null
+    | undefined;
   status: string;
   viewCount: number;
 }
 
+type StoredAuth = {
+  id?: string;
+  token?: string;
+  isLoggedIn?: boolean;
+};
+
+const readStoredAuth = (): StoredAuth | null => {
+  if (typeof window === "undefined") return null;
+
+  const stored = localStorage.getItem("bookshare_auth_v3");
+  if (!stored) return null;
+
+  try {
+    return JSON.parse(stored) as StoredAuth;
+  } catch {
+    return null;
+  }
+};
+
+const getCategoryLabel = (value?: Book["categories"], fallback = "Sách chung") => {
+  if (!Array.isArray(value) || value.length === 0) return fallback;
+
+  const first = value[0];
+  if (typeof first === "string") return first || fallback;
+  return first?.name || first?.slug || fallback;
+};
+
 export default function BookCard({ book }: { book: Book }) {
-  const [auth, setAuth] = useState<any>(null);
+  const [auth] = useState(readStoredAuth);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("bookshare_auth_v3");
-      if (stored) {
-        setAuth(JSON.parse(stored));
-      }
-    }
-  }, []);
+  const ownerId = typeof book.owner === "string" ? book.owner : book.owner?._id;
+  const isOwner = Boolean(auth?.isLoggedIn && ownerId && ownerId === auth.id);
 
-  const ownerId = book.owner?._id || book.owner;
-  const isOwner = auth && ownerId === auth.id;
-
-  const conditionText = book.codition ? book.codition.toUpperCase() : "CÓ SẴN";
   let statusClass = styles.statusAvailable;
   let displayStatus = "Có sẵn";
-  
+
   if (book.status?.toUpperCase() === "PENDING") {
     statusClass = styles.statusPending;
     displayStatus = "Đã có người xin";
   }
 
-  // Mock category for UI demo if not present
-  const categoryText = book.category || "Sách chung";
+  const categoryText =
+    book.category ||
+    getCategoryLabel(book.categories) ||
+    getCategoryLabel(book.advancedCategories);
 
   const cover = book.images && book.images.length > 0 ? book.images[0] : "https://via.placeholder.com/150";
 
@@ -74,9 +102,7 @@ export default function BookCard({ book }: { book: Book }) {
       <div className={styles.content}>
         <div className={styles.metaRow}>
           <div className={styles.categoryBadge}>{categoryText}</div>
-          <div className={`${styles.statusBadge} ${statusClass}`}>
-            {displayStatus}
-          </div>
+          <div className={`${styles.statusBadge} ${statusClass}`}>{displayStatus}</div>
         </div>
 
         <Link href={`/books/${book._id}`} className={styles.titleLink}>
@@ -87,8 +113,12 @@ export default function BookCard({ book }: { book: Book }) {
         <div className={styles.ownerInfo}>
           <div className={styles.avatar}>
             <img
-              src={book.owner?.avatar || "https://ui-avatars.com/api/?name=User&background=random"}
-              alt={book.owner?.fullName || "Người dùng"}
+              src={
+                typeof book.owner === "string"
+                  ? "https://ui-avatars.com/api/?name=User&background=random"
+                  : book.owner?.avatar || "https://ui-avatars.com/api/?name=User&background=random"
+              }
+              alt={typeof book.owner === "string" ? "Người dùng" : book.owner?.fullName || "Người dùng"}
               className={styles.avatarImg}
               onError={(e) => {
                 (e.target as HTMLImageElement).src = "https://ui-avatars.com/api/?name=User&background=random";
@@ -96,13 +126,13 @@ export default function BookCard({ book }: { book: Book }) {
             />
           </div>
           <span className={styles.ownerName}>
-            {isOwner ? "Sách của Bạn" : `Sở hữu bởi ${book.owner?.fullName || "Người dùng"}`}
+            {isOwner ? "Sách của Bạn" : `Sở hữu bởi ${typeof book.owner === "string" ? "Người dùng" : book.owner?.fullName || "Người dùng"}`}
           </span>
         </div>
 
         <div className={styles.actionRow}>
-          <Link 
-            href={`/books/${book._id}`} 
+          <Link
+            href={`/books/${book._id}`}
             className={`${styles.actionButton} ${isOwner ? styles.btnOutline : styles.btnPrimary}`}
           >
             {isOwner ? "Quản lý lượt xin" : "Nhận sách miễn phí"}

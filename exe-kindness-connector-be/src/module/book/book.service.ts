@@ -16,7 +16,9 @@ export class BookService {
   async create(createBookDto: CreateBookDto) {
     const book = await this.bookModel.create(createBookDto as any);
     if (createBookDto.owner) {
-      await this.userModel.findByIdAndUpdate(createBookDto.owner, { $inc: { points: 10 } });
+      await this.userModel.findByIdAndUpdate(createBookDto.owner, {
+        $inc: { points: 10 },
+      });
     }
     return book;
   }
@@ -29,15 +31,8 @@ export class BookService {
         { author: { $regex: query.search, $options: 'i' } },
       ];
     }
-    if (query?.category) {
-      filter.categories = query.category;
-    }
 
-    return await this.bookModel
-      .find(filter)
-      .populate('categories')
-      .populate('advancedCategories')
-      .populate('owner');
+    return await this.bookModel.find(filter).populate('owner');
   }
 
   async findOne(id: string) {
