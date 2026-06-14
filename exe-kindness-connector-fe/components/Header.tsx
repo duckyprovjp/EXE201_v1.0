@@ -99,6 +99,7 @@ export default function Header() {
   };
 
   const isChatRoom = pathname.startsWith("/chat/") && pathname !== "/chat";
+  const isAuthPage = ["/login", "/register", "/forgot-password"].includes(pathname);
 
   const navItems = [
     { name: "Khám phá", path: "/" },
@@ -113,6 +114,20 @@ export default function Header() {
   if (isChatRoom) {
     return (
       <header className={`${styles.header} ${styles.desktopOnly}`}>
+        <div className={styles.headerContainer}>
+          <div className={styles.leftSection}>
+            <Link href="/" className={styles.brand}>
+              <span className={styles.brandName}>Kindness Connector</span>
+            </Link>
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  if (isAuthPage) {
+    return (
+      <header className={styles.header}>
         <div className={styles.headerContainer}>
           <div className={styles.leftSection}>
             <Link href="/" className={styles.brand}>

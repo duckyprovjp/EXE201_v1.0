@@ -15,16 +15,14 @@ export class Book {
   author!: string;
 
   @Prop({
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'BookCategory',
+    type: [String],
   })
-  categories!: mongoose.Types.ObjectId[];
+  categories!: string[];
 
   @Prop({
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'BookCategory',
+    type: [String],
   })
-  advancedCategories!: mongoose.Types.ObjectId[];
+  advancedCategories!: string[];
 
   @Prop()
   description!: string;

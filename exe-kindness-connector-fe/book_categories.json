@@ -1,0 +1,95 @@
+[
+  {
+    "name": "Sách Văn Học",
+    "slug": "van-hoc",
+    "description": "Các tác phẩm truyện, tiểu thuyết, thơ mang tính nghệ thuật và giải trí",
+    "subcategories": [
+      {
+        "name": "Tiểu thuyết & Truyện ngắn",
+        "slug": "tieu-thuyet-truyen-ngan"
+      },
+      {
+        "name": "Trinh thám & Kinh dị",
+        "slug": "trinh-tham-kinh-di"
+      },
+      {
+        "name": "Viễn tưởng & Giả tưởng",
+        "slug": "vien-tuong-gia-tuong"
+      },
+      {
+        "name": "Truyện tranh & Light Novel",
+        "slug": "truyen-tranh-light-novel"
+      },
+      {
+        "name": "Tản văn & Thơ ca",
+        "slug": "tan-van-tho-ca"
+      },
+      {
+        "name": "Văn học khác",
+        "slug": "van-hoc-khac"
+      }
+    ]
+  },
+  {
+    "name": "Sách Phi Văn Học",
+    "slug": "phi-van-hoc",
+    "description": "Sách kiến thức thực tế, kỹ năng, đời sống và khoa học",
+    "subcategories": [
+      {
+        "name": "Phát triển bản thân (Self-help)",
+        "slug": "phat-trien-ban-than"
+      },
+      {
+        "name": "Kinh doanh & Đầu tư",
+        "slug": "kinh-doanh-dau-tu"
+      },
+      {
+        "name": "Lịch sử & Triết học",
+        "slug": "lich-su-trieu-hoc"
+      },
+      {
+        "name": "Tiểu sử & Hồi ký",
+        "slug": "tieu-su-hoi-ky"
+      },
+      {
+        "name": "Nuôi dạy con & Gia đình",
+        "slug": "nuoi-day-con-gia-dinh"
+      },
+      {
+        "name": "Tâm lý học ứng dụng",
+        "slug": "tam-ly-hoc-ung-dung"
+      },
+      {
+        "name": "Khoa học & Công nghệ",
+        "slug": "khoa-hoc-cong-nghe"
+      },
+      {
+        "name": "Kiến thức khác",
+        "slug": "kien-thuc-khac"
+      }
+    ]
+  },
+  {
+    "name": "Sách Giáo Khoa & Tài Liệu",
+    "slug": "giao-khoa-tai-lieu",
+    "description": "Sách phục vụ học tập, ôn thi, nghiên cứu và học ngoại ngữ",
+    "subcategories": [
+      {
+        "name": "Sách Giáo Khoa (Lớp 1-12)",
+        "slug": "sach-giao-khoa"
+      },
+      {
+        "name": "Giáo trình Đại học",
+        "slug": "giao-trinh-dai-hoc"
+      },
+      {
+        "name": "Học ngoại ngữ (IELTS, TOEIC...)",
+        "slug": "hoc-ngoai-ngu"
+      },
+      {
+        "name": "Tài liệu & Sách tham khảo khác",
+        "slug": "tai-lieu-tham-khao"
+      }
+    ]
+  }
+]
