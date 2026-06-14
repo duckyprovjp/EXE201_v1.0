@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { ChatRoom } from './entities/chat-room.entity';
 import { Message } from './entities/message.entity';
+import { Message_Status } from '../../common/enums/status.enum';
 
 @Injectable()
 export class ChatService {
@@ -48,6 +49,17 @@ export class ChatService {
       .find({ roomId })
       .populate('senderId', 'fullName avatar')
       .sort({ createdAt: 1 });
+  }
+
+  async markMessagesAsSeen(roomId: string, userId: string) {
+    await this.messageModel.updateMany(
+      { 
+        roomId: new mongoose.Types.ObjectId(roomId), 
+        senderId: { $ne: new mongoose.Types.ObjectId(userId) }, 
+        status: { $ne: Message_Status.SEEN } 
+      },
+      { $set: { status: Message_Status.SEEN } }
+    );
   }
 
   async saveMessage(roomId: string, senderId: string, content: string) {

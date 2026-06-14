@@ -31,12 +31,36 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('joinRoom')
-  handleJoinRoom(
+  async handleJoinRoom(
     @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { roomId: string },
+    @MessageBody() payload: { roomId: string; userId?: string },
   ) {
-    client.join(payload.roomId);
-    console.log(`Client ${client.id} joined room: ${payload.roomId}`);
+    try {
+      client.join(payload.roomId);
+      console.log(`Client ${client.id} joined room: ${payload.roomId}`);
+      
+      if (payload.userId) {
+        await this.chatService.markMessagesAsSeen(payload.roomId, payload.userId);
+        this.server.to(payload.roomId).emit('messagesSeen', { roomId: payload.roomId, userId: payload.userId });
+      }
+    } catch (error: any) {
+      console.error("Error in joinRoom:", error);
+      client.emit('errorMessage', { message: 'Error marking messages as seen: ' + error.message });
+    }
+  }
+
+  @SubscribeMessage('markAsSeen')
+  async handleMarkAsSeen(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { roomId: string; userId: string },
+  ) {
+    try {
+      await this.chatService.markMessagesAsSeen(payload.roomId, payload.userId);
+      this.server.to(payload.roomId).emit('messagesSeen', { roomId: payload.roomId, userId: payload.userId });
+    } catch (error: any) {
+      console.error("Error in markAsSeen:", error);
+      client.emit('errorMessage', { message: 'Error in markAsSeen: ' + error.message });
+    }
   }
 
   @SubscribeMessage('sendMessage')
