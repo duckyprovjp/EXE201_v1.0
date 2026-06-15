@@ -1,0 +1,406 @@
+.container {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.navBack {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 2rem;
+  transition: color 0.2s;
+
+  &:hover {
+    color: var(--primary);
+  }
+}
+
+.card {
+  background-color: var(--bg-color);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-level-1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+}
+
+.imageSection {
+  width: 100%;
+  background-color: var(--bg-color-surface);
+  
+  @media (min-width: 768px) {
+    width: 40%;
+    border-right: 1px solid var(--border-subtle);
+  }
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  aspect-ratio: 3/4;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.carouselContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carouselBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 10;
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  &.prev {
+    left: 1rem;
+  }
+  
+  &.next {
+    right: 1rem;
+  }
+}
+
+.carouselDots {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.8);
+  }
+}
+
+.dotActive {
+  background: white;
+  transform: scale(1.2);
+}
+
+.infoSection {
+  padding: 2rem;
+  width: 100%;
+
+  @media (min-width: 768px) {
+    width: 60%;
+    padding: 3rem;
+  }
+}
+
+.badgeGroup {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.conditionBadge, .statusBadge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+}
+
+.conditionBadge {
+  background-color: var(--primary-light-bg);
+  color: var(--secondary);
+}
+
+.statusBadge {
+  background-color: var(--bg-color-surface);
+  color: var(--text-muted);
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.author {
+  font-size: 1.125rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 2rem;
+}
+
+.ownerInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--bg-color-surface);
+  border-radius: var(--radius-md);
+  margin-bottom: 2rem;
+}
+
+.avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+}
+
+.ownerMeta {
+  display: flex;
+  flex-direction: column;
+}
+
+.ownerName {
+  font-weight: 700;
+  color: var(--text-main);
+  font-size: 1rem;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+
+  .icon {
+    color: var(--primary);
+  }
+}
+
+.description {
+  margin-bottom: 2.5rem;
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--text-muted);
+    white-space: pre-wrap;
+  }
+}
+
+.actionGroup {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.requestButton {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: var(--primary);
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: 1.125rem;
+  font-weight: 700;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-level-1);
+  }
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-color-surface);
+  color: var(--text-muted);
+  transition: all 0.2s;
+
+  &:hover {
+    color: var(--primary);
+    background-color: var(--primary-light-bg);
+  }
+}
+
+.loading {
+  text-align: center;
+  padding: 4rem;
+  font-size: 1.25rem;
+  color: var(--text-muted);
+}
+
+.errorState {
+  text-align: center;
+  padding: 4rem;
+  
+  h2 {
+    color: var(--danger);
+    margin-bottom: 1.5rem;
+  }
+  
+  .backButton {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary);
+    color: white;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+  }
+}
+.requestsSection {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-subtle);
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+  }
+}
+
+.requestList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.requestItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--bg-color-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.reqAvatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.reqInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  strong {
+    font-size: 0.9375rem;
+    color: var(--text-main);
+  }
+
+  span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+  }
+}
+
+.reqActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.acceptBtn, .rejectBtn, .chatBtn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.acceptBtn {
+  background-color: var(--primary);
+  color: white;
+  &:hover {
+    background-color: var(--primary-hover);
+  }
+}
+
+.rejectBtn {
+  background-color: rgba(244, 63, 94, 0.1);
+  color: var(--danger);
+  &:hover {
+    background-color: rgba(244, 63, 94, 0.2);
+  }
+}
+
+.chatBtn {
+  background-color: var(--success-bg);
+  color: var(--success-text);
+  &:hover {
+    background-color: #dcfce7;
+  }
+}
+
+.manageButton {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--bg-color-surface);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  padding: 0.875rem 1.5rem;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: var(--primary-light-bg);
+  }
+}

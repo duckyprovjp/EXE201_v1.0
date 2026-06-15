@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  /* Colors based on Modern Minimalism Design System */
+  --primary: #00a8ff; /* Electric Blue */
+  --primary-hover: #008ecc;
+  --primary-light: #cde5ff;
+  --primary-light-bg: #f0f8ff;
+  --secondary: #006399;
+  
+  --bg-color: #ffffff; /* surface-container-lowest */
+  --bg-color-alt: #fcf8f9; /* surface */
+  --bg-color-surface: #f6f3f4; /* surface-container-low */
+  
+  --text-main: #1b1b1c; /* on-surface */
+  --text-muted: #3e4852; /* on-surface-variant */
+  
+  --border-color: #e5e2e3; /* surface-container-highest */
+  --border-subtle: #f0edee;
+  
+  --danger: #ba1a1a;
+  --danger-bg: #ffdad6;
+  
+  --success-text: #166534;
+  --success-bg: #dcfce7;
+  
+  --amber-text: #b45309;
+  --amber-bg: #fef3c7;
+
+  /* Shadows */
+  --shadow-level-1: 0px 1px 3px rgba(0, 0, 0, 0.04), 0px 4px 12px rgba(0, 0, 0, 0.03);
+  --shadow-level-2: 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 12px 32px rgba(0, 0, 0, 0.06);
+
+  /* Border Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 9999px;
+  --card-radius: 1.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #121212;
+    --bg-color-alt: #1e1e1e;
+    --bg-color-surface: #2c2c2c;
+    
+    --text-main: #f3f0f1;
+    --text-muted: #a0a0a0;
+    
+    --border-color: #303031;
+    --border-subtle: #242424;
+
+    --primary-light-bg: rgba(0, 168, 255, 0.15);
+    --danger-bg: rgba(186, 26, 26, 0.15);
+    --success-bg: rgba(22, 163, 74, 0.15);
+    --success-text: #4ade80;
+    --amber-bg: rgba(217, 119, 6, 0.15);
+    --amber-text: #fbbf24;
+
+    --shadow-level-1: 0px 1px 3px rgba(0, 0, 0, 0.2), 0px 4px 12px rgba(0, 0, 0, 0.15);
+    --shadow-level-2: 0px 4px 8px rgba(0, 0, 0, 0.2), 0px 12px 32px rgba(0, 0, 0, 0.25);
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color-alt);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+::selection {
+  background-color: rgba(0, 168, 255, 0.15);
+  color: var(--text-main);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 2rem;
+  }
+}
+
+.text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
