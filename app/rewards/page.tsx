@@ -27,7 +27,7 @@ export default function RewardsPage() {
       }
       const auth = JSON.parse(authStr);
 
-      const res = await axios.get("http://localhost:3000/user/me", {
+      const res = await axios.get("https://exe-kindness-connector-be.onrender.com/user/me", {
         headers: { Authorization: `Bearer ${auth.token}` }
       });
 
@@ -48,7 +48,7 @@ export default function RewardsPage() {
       const authStr = localStorage.getItem("bookshare_auth_v3");
       const auth = JSON.parse(authStr!);
       
-      await axios.post("http://localhost:3000/user/membership", {}, {
+      await axios.post("https://exe-kindness-connector-be.onrender.com/user/membership", {}, {
         headers: { Authorization: `Bearer ${auth.token}` }
       });
 

@@ -34,7 +34,7 @@ export default function ProfilePage() {
       const auth = JSON.parse(authStr);
       setAuthData(auth);
 
-      const res = await axios.get("http://localhost:3000/user/me", {
+      const res = await axios.get("https://exe-kindness-connector-be.onrender.com/user/me", {
         headers: { Authorization: `Bearer ${auth.token}` }
       });
 
@@ -80,7 +80,7 @@ export default function ProfilePage() {
         }
       };
 
-      const res = await axios.patch("http://localhost:3000/user/me", payload, {
+      const res = await axios.patch("https://exe-kindness-connector-be.onrender.com/user/me", payload, {
         headers: { Authorization: `Bearer ${auth.token}` }
       });
 

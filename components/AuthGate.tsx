@@ -52,7 +52,7 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
       }
 
       try {
-        await axios.get("http://localhost:3000/user/me", {
+        await axios.get("https://exe-kindness-connector-be.onrender.com/user/me", {
           headers: { Authorization: `Bearer ${auth.token}` },
         });
 

@@ -115,7 +115,7 @@ export default function Home() {
       }
 
       const authData = JSON.parse(stored);
-      const res = await axios.get("http://localhost:3000/user/me", {
+      const res = await axios.get("https://exe-kindness-connector-be.onrender.com/user/me", {
         headers: { Authorization: `Bearer ${authData.token}` },
       });
 
@@ -134,7 +134,7 @@ export default function Home() {
   const fetchBooks = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:3000/book");
+      const response = await axios.get("https://exe-kindness-connector-be.onrender.com/book");
       if (response.data) {
         setBooks(response.data);
       }

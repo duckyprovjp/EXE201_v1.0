@@ -37,9 +37,9 @@ export default function AdminDashboard() {
       const headers = { Authorization: `Bearer ${auth.token}` };
       
       const [statsRes, usersRes, booksRes] = await Promise.all([
-        axios.get("http://localhost:3000/admin/stats", { headers }),
-        axios.get("http://localhost:3000/admin/users", { headers }),
-        axios.get("http://localhost:3000/admin/books", { headers })
+        axios.get("https://exe-kindness-connector-be.onrender.com/admin/stats", { headers }),
+        axios.get("https://exe-kindness-connector-be.onrender.com/admin/users", { headers }),
+        axios.get("https://exe-kindness-connector-be.onrender.com/admin/books", { headers })
       ]);
 
       setStats(statsRes.data);
@@ -59,7 +59,7 @@ export default function AdminDashboard() {
     try {
       const authStr = localStorage.getItem("bookshare_auth_v3");
       const auth = JSON.parse(authStr!);
-      await axios.patch(`http://localhost:3000/admin/users/${userId}/status`, { status: newStatus }, {
+      await axios.patch(`https://exe-kindness-connector-be.onrender.com/admin/users/${userId}/status`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${auth.token}` }
       });
       fetchAdminData();
@@ -72,7 +72,7 @@ export default function AdminDashboard() {
     try {
       const authStr = localStorage.getItem("bookshare_auth_v3");
       const auth = JSON.parse(authStr!);
-      await axios.patch(`http://localhost:3000/admin/books/${bookId}/status`, { status: newStatus }, {
+      await axios.patch(`https://exe-kindness-connector-be.onrender.com/admin/books/${bookId}/status`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${auth.token}` }
       });
       fetchAdminData();

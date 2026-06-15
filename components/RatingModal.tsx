@@ -27,7 +27,7 @@ export default function RatingModal({ exchangeId, reviewedUserId, onClose, onSuc
       const authStr = localStorage.getItem("bookshare_auth_v3");
       const auth = JSON.parse(authStr!);
       await axios.post(
-        "http://localhost:3000/review",
+        "https://exe-kindness-connector-be.onrender.com/review",
         {
           exchangeId,
           reviewedUserId,

@@ -19,7 +19,7 @@ export default function ForgotPassword() {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:3000/auth/forgot-password", {
+      const response = await axios.post("https://exe-kindness-connector-be.onrender.com/auth/forgot-password", {
         email,
       });
 

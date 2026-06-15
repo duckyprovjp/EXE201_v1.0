@@ -21,7 +21,7 @@ export default function Register() {
     setLoading(true);
 
     try {
-      await axios.post("http://localhost:3000/auth/register", {
+      await axios.post("https://exe-kindness-connector-be.onrender.com/auth/register", {
         email,
         password,
         fullName,
@@ -30,7 +30,7 @@ export default function Register() {
       });
 
       // Auto login after register
-      const loginRes = await axios.post("http://localhost:3000/auth/login", {
+      const loginRes = await axios.post("https://exe-kindness-connector-be.onrender.com/auth/login", {
         email,
         password,
       });

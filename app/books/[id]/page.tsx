@@ -52,7 +52,7 @@ export default function BookDetail({ params }: { params: Promise<{ id: string }>
   const fetchBook = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:3000/book/${id}`);
+      const res = await axios.get(`https://exe-kindness-connector-be.onrender.com/book/${id}`);
       setBook(res.data);
     } catch (err: any) {
       setError("Không tìm thấy sách hoặc đã bị xóa.");
@@ -72,7 +72,7 @@ export default function BookDetail({ params }: { params: Promise<{ id: string }>
       }
       const auth = JSON.parse(authStr);
       
-      await axios.post("http://localhost:3000/exchange", {
+      await axios.post("https://exe-kindness-connector-be.onrender.com/exchange", {
         bookId: book._id,
         ownerId: book.owner._id
       }, {
@@ -98,7 +98,7 @@ export default function BookDetail({ params }: { params: Promise<{ id: string }>
     try {
       setLoadingRequests(true);
       setShowRequests(true);
-      const res = await axios.get(`http://localhost:3000/exchange/book/${book._id}`, {
+      const res = await axios.get(`https://exe-kindness-connector-be.onrender.com/exchange/book/${book._id}`, {
         headers: { Authorization: `Bearer ${auth.token}` }
       });
       setBookRequests(res.data);
@@ -112,7 +112,7 @@ export default function BookDetail({ params }: { params: Promise<{ id: string }>
 
   const handleUpdateStatus = async (exchangeId: string, status: string) => {
     try {
-      await axios.patch(`http://localhost:3000/exchange/${exchangeId}/status`, { status }, {
+      await axios.patch(`https://exe-kindness-connector-be.onrender.com/exchange/${exchangeId}/status`, { status }, {
         headers: { Authorization: `Bearer ${auth.token}` }
       });
       

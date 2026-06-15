@@ -27,7 +27,7 @@ export default function RequestsPage() {
       const auth = JSON.parse(authStr);
       setUserId(auth.id);
 
-      const res = await axios.get("http://localhost:3000/exchange", {
+      const res = await axios.get("https://exe-kindness-connector-be.onrender.com/exchange", {
         headers: { Authorization: `Bearer ${auth.token}` }
       });
       setRequests(res.data);
@@ -43,7 +43,7 @@ export default function RequestsPage() {
       const authStr = localStorage.getItem("bookshare_auth_v3");
       const auth = JSON.parse(authStr!);
 
-      await axios.patch(`http://localhost:3000/exchange/${id}/status`, { status }, {
+      await axios.patch(`https://exe-kindness-connector-be.onrender.com/exchange/${id}/status`, { status }, {
         headers: { Authorization: `Bearer ${auth.token}` }
       });
       

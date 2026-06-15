@@ -55,7 +55,7 @@ export default function Header() {
   useEffect(() => {
     const fetchUserData = async (token: string, candidateAuth: StoredAuth) => {
       try {
-        const res = await axios.get("http://localhost:3000/user/me", {
+        const res = await axios.get("https://exe-kindness-connector-be.onrender.com/user/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
 

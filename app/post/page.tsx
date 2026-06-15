@@ -137,7 +137,7 @@ export default function PostBook() {
       const uploadPromises = validFiles.map(async (file) => {
         const uploadData = new FormData();
         uploadData.append("file", file);
-        const res = await axios.post("http://localhost:3000/upload/image", uploadData, {
+        const res = await axios.post("https://exe-kindness-connector-be.onrender.com/upload/image", uploadData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         return res.data?.url;
@@ -180,7 +180,7 @@ export default function PostBook() {
         viewCount: 0
       };
 
-      await axios.post("http://localhost:3000/book", payload, {
+      await axios.post("https://exe-kindness-connector-be.onrender.com/book", payload, {
         headers: {
           Authorization: `Bearer ${auth.token}`
         }
