@@ -9,7 +9,9 @@ describe('UserController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
       providers: [UserService],
-    }).useMocker(() => ({})).compile();
+    })
+      .useMocker(() => ({}))
+      .compile();
 
     controller = module.get<UserController>(UserController);
   });

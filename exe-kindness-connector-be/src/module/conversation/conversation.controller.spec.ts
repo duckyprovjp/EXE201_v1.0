@@ -9,7 +9,9 @@ describe('ConversationController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ConversationController],
       providers: [ConversationService],
-    }).useMocker(() => ({})).compile();
+    })
+      .useMocker(() => ({}))
+      .compile();
 
     controller = module.get<ConversationController>(ConversationController);
   });

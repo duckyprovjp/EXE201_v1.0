@@ -34,6 +34,5 @@ export class Membership {
 
   @Prop()
   amount!: number;
-  
 }
-export const MembershipSchema = SchemaFactory.createForClass(Membership)
+export const MembershipSchema = SchemaFactory.createForClass(Membership);

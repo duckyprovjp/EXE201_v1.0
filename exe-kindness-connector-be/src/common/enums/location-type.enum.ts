@@ -1,4 +1,4 @@
 export enum LocationType {
-    CITY = 'CITY',
-    DISTRICT = 'DISTRICT'
+  CITY = 'CITY',
+  DISTRICT = 'DISTRICT',
 }

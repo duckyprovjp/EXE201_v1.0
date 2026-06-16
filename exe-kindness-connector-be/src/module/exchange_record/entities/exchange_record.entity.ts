@@ -61,4 +61,5 @@ export class ExchangeRecord {
   })
   feedback!: Feedback;
 }
-export const ExchangeRecordSchema = SchemaFactory.createForClass(ExchangeRecord)
+export const ExchangeRecordSchema =
+  SchemaFactory.createForClass(ExchangeRecord);

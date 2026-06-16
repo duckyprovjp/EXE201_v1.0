@@ -9,9 +9,13 @@ describe('MembershipRecordController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MembershipRecordController],
       providers: [MembershipRecordService],
-    }).useMocker(() => ({})).compile();
+    })
+      .useMocker(() => ({}))
+      .compile();
 
-    controller = module.get<MembershipRecordController>(MembershipRecordController);
+    controller = module.get<MembershipRecordController>(
+      MembershipRecordController,
+    );
   });
 
   it('should be defined', () => {

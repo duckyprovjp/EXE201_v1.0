@@ -16,7 +16,7 @@ export class ChatService {
     // Find a room that contains EXACTLY these participants.
     // Assuming participants array always has exactly 2 members.
     const existingRoom = await this.chatRoomModel.findOne({
-      participants: { $all: participants, $size: participants.length }
+      participants: { $all: participants, $size: participants.length },
     });
 
     if (existingRoom) {
@@ -29,7 +29,11 @@ export class ChatService {
   }
 
   async updateActiveExchange(roomId: string, exchangeId: string) {
-    return this.chatRoomModel.findByIdAndUpdate(roomId, { activeExchange: exchangeId }, { new: true });
+    return this.chatRoomModel.findByIdAndUpdate(
+      roomId,
+      { activeExchange: exchangeId },
+      { new: true },
+    );
   }
 
   async getRoomsForUser(userId: string) {
@@ -39,7 +43,7 @@ export class ChatService {
       .populate({
         path: 'activeExchange',
         select: 'status book',
-        populate: { path: 'book', select: 'title images' }
+        populate: { path: 'book', select: 'title images' },
       })
       .sort({ updatedAt: -1 });
   }
@@ -53,21 +57,25 @@ export class ChatService {
 
   async markMessagesAsSeen(roomId: string, userId: string) {
     await this.messageModel.updateMany(
-      { 
-        roomId: new mongoose.Types.ObjectId(roomId), 
-        senderId: { $ne: new mongoose.Types.ObjectId(userId) }, 
-        status: { $ne: Message_Status.SEEN } 
+      {
+        roomId: new mongoose.Types.ObjectId(roomId),
+        senderId: { $ne: new mongoose.Types.ObjectId(userId) },
+        status: { $ne: Message_Status.SEEN },
       },
-      { $set: { status: Message_Status.SEEN } }
+      { $set: { status: Message_Status.SEEN } },
     );
   }
 
   async saveMessage(roomId: string, senderId: string, content: string) {
-    const room = await this.chatRoomModel.findById(roomId).populate('activeExchange');
+    const room = await this.chatRoomModel
+      .findById(roomId)
+      .populate('activeExchange');
     if (room && room.activeExchange) {
       const exchangeStatus = (room.activeExchange as any).status;
       if (exchangeStatus === 'CANCELED' || exchangeStatus === 'COMPLETED') {
-        throw new Error('Giao dịch đã kết thúc, bạn không thể gửi thêm tin nhắn.');
+        throw new Error(
+          'Giao dịch đã kết thúc, bạn không thể gửi thêm tin nhắn.',
+        );
       }
     }
 

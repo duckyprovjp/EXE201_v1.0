@@ -4,7 +4,11 @@ import { Message_Status } from '../../../common/enums/status.enum';
 
 @Schema({ timestamps: true })
 export class Message {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'ChatRoom', required: true })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ChatRoom',
+    required: true,
+  })
   roomId!: mongoose.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })

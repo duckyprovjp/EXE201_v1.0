@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Review } from './entities/review.entity';
@@ -8,12 +12,13 @@ import { UserService } from '../user/user.service';
 export class ReviewService {
   constructor(
     @InjectModel(Review.name) private readonly reviewModel: Model<Review>,
-    private readonly userService: UserService
+    private readonly userService: UserService,
   ) {}
 
   async createReview(data: any): Promise<Review> {
-    const { reviewerId, reviewedUserId, exchangeId, ratingScore, comment } = data;
-    
+    const { reviewerId, reviewedUserId, exchangeId, ratingScore, comment } =
+      data;
+
     // Check if review already exists for this exchange and reviewer
     const existing = await this.reviewModel.findOne({ reviewerId, exchangeId });
     if (existing) {
@@ -25,9 +30,9 @@ export class ReviewService {
       reviewedUserId,
       exchangeId,
       ratingScore,
-      comment
+      comment,
     });
-    
+
     await review.save();
 
     // Update reputation score of the reviewed user

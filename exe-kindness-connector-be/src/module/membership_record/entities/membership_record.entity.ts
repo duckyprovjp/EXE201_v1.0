@@ -26,4 +26,5 @@ export class MembershipRecord {
   @Prop()
   action!: Action;
 }
-export const MembershipRecordSchema = SchemaFactory.createForClass(MembershipRecord)
+export const MembershipRecordSchema =
+  SchemaFactory.createForClass(MembershipRecord);
