@@ -43,10 +43,16 @@ export class AuthService {
     const user = await this.userService.findByEmail(email);
     if (!user) {
       // Return a generic response to prevent email enumeration
-      return { message: 'If an account with that email exists, a password reset link has been sent.' };
+      return {
+        message:
+          'If an account with that email exists, a password reset link has been sent.',
+      };
     }
     // Placeholder for sending email (UC-03)
     console.log(`Password reset link requested for ${email}`);
-    return { message: 'If an account with that email exists, a password reset link has been sent.' };
+    return {
+      message:
+        'If an account with that email exists, a password reset link has been sent.',
+    };
   }
 }

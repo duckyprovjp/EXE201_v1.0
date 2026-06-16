@@ -24,4 +24,4 @@ export class MessageStatus {
   @Prop()
   status!: Message_Status;
 }
-export const MessageStatusSchema = SchemaFactory.createForClass(MessageStatus)
+export const MessageStatusSchema = SchemaFactory.createForClass(MessageStatus);

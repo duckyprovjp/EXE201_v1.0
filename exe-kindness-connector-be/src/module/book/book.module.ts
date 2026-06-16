@@ -5,6 +5,8 @@ import { BookController } from './book.controller';
 import { Book, BookSchema } from './entities/book.entity';
 import { User, UserSchema } from '../user/entities/user.entity';
 
+import { Location, LocationSchema } from '../location/entities/location.entity';
+
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -15,6 +17,10 @@ import { User, UserSchema } from '../user/entities/user.entity';
       {
         name: User.name,
         schema: UserSchema,
+      },
+      {
+        name: Location.name,
+        schema: LocationSchema,
       },
     ]),
   ],

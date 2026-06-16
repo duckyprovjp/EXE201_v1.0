@@ -39,4 +39,5 @@ export class ExchangeRequest {
   @Prop()
   completedAt!: Date;
 }
-export const ExchangeRequestSchema = SchemaFactory.createForClass(ExchangeRequest)
+export const ExchangeRequestSchema =
+  SchemaFactory.createForClass(ExchangeRequest);

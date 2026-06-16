@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { Exchange } from './entities/exchange.entity';
@@ -15,7 +19,7 @@ export class ExchangeService {
     @InjectModel(User.name) private userModel: Model<User>,
     private chatService: ChatService,
     private chatGateway: ChatGateway,
-  ) { }
+  ) {}
 
   async create(requesterId: string, bookId: string, ownerId: string) {
     if (requesterId === ownerId) {
@@ -30,7 +34,9 @@ export class ExchangeService {
     });
 
     if (existing) {
-      throw new BadRequestException('You already have a pending request for this book');
+      throw new BadRequestException(
+        'You already have a pending request for this book',
+      );
     }
 
     const exchange = await this.exchangeModel.create({
@@ -39,19 +45,34 @@ export class ExchangeService {
       owner: ownerId,
     });
 
-    const populated = await exchange.populate([{ path: 'requester' }, { path: 'book' }]);
+    const populated = await exchange.populate([
+      { path: 'requester' },
+      { path: 'book' },
+    ]);
 
-    const chatRoom = await this.chatService.getOrCreateRoom([requesterId, ownerId]);
-    await this.chatService.updateActiveExchange(chatRoom._id.toString(), exchange._id.toString());
+    const chatRoom = await this.chatService.getOrCreateRoom([
+      requesterId,
+      ownerId,
+    ]);
+    await this.chatService.updateActiveExchange(
+      chatRoom._id.toString(),
+      exchange._id.toString(),
+    );
 
-    const requesterName = (populated.requester as any).fullName || 'Một người dùng';
+    const requesterName =
+      (populated.requester as any).fullName || 'Một người dùng';
     const bookTitle = (populated.book as any).title || 'sách';
     const msgContent = `${requesterName} vừa yêu cầu trao đổi cuốn sách ${bookTitle}`;
 
-    const sysMsg = await this.chatService.saveSystemMessage(chatRoom._id.toString(), msgContent);
-    this.chatGateway.server.to(chatRoom._id.toString()).emit('newMessage', sysMsg);
+    const sysMsg = await this.chatService.saveSystemMessage(
+      chatRoom._id.toString(),
+      msgContent,
+    );
+    this.chatGateway.server
+      .to(chatRoom._id.toString())
+      .emit('newMessage', sysMsg);
 
-    exchange.chatRoomId = chatRoom._id as any;
+    exchange.chatRoomId = chatRoom._id;
     await exchange.save();
 
     return exchange;
@@ -76,13 +97,21 @@ export class ExchangeService {
       .sort({ createdAt: -1 });
   }
 
-  async updateStatus(exchangeId: string, ownerId: string, status: Exchange_Status) {
+  async updateStatus(
+    exchangeId: string,
+    ownerId: string,
+    status: Exchange_Status,
+  ) {
     const exchange = await this.exchangeModel.findById(exchangeId);
     if (!exchange) {
       throw new NotFoundException('Exchange request not found');
     }
 
-    if (exchange.owner.toString() !== ownerId && (status === Exchange_Status.ACCEPTED || status === Exchange_Status.REJECTED)) {
+    if (
+      exchange.owner.toString() !== ownerId &&
+      (status === Exchange_Status.ACCEPTED ||
+        status === Exchange_Status.REJECTED)
+    ) {
       throw new BadRequestException('Only the book owner can accept or reject');
     }
 
@@ -94,7 +123,10 @@ export class ExchangeService {
     const exchange = await this.exchangeModel.findById(exchangeId);
     if (!exchange) throw new NotFoundException('Exchange not found');
 
-    if (exchange.owner.toString() !== userId && exchange.requester.toString() !== userId) {
+    if (
+      exchange.owner.toString() !== userId &&
+      exchange.requester.toString() !== userId
+    ) {
       throw new BadRequestException('You are not part of this exchange');
     }
 
@@ -106,13 +138,20 @@ export class ExchangeService {
       const bookTitle = (populated.book as any).title || 'sách';
       const msgContent = `Giao dịch đổi sách ${bookTitle} đã bị hủy`;
 
-      const sysMsg = await this.chatService.saveSystemMessage(exchange.chatRoomId.toString(), msgContent);
-      this.chatGateway.server.to(exchange.chatRoomId.toString()).emit('newMessage', sysMsg);
+      const sysMsg = await this.chatService.saveSystemMessage(
+        exchange.chatRoomId.toString(),
+        msgContent,
+      );
+      this.chatGateway.server
+        .to(exchange.chatRoomId.toString())
+        .emit('newMessage', sysMsg);
 
-      this.chatGateway.server.to(exchange.chatRoomId.toString()).emit('exchange_canceled', {
-        exchangeId: exchange._id,
-        message: 'Giao dịch đã hủy'
-      });
+      this.chatGateway.server
+        .to(exchange.chatRoomId.toString())
+        .emit('exchange_canceled', {
+          exchangeId: exchange._id,
+          message: 'Giao dịch đã hủy',
+        });
     }
 
     return exchange;
@@ -124,29 +163,47 @@ export class ExchangeService {
 
     // Only owner can complete? Or both? Let's say either can complete, or maybe owner only.
     // The requirement says "nếu hoàn tất giao dịch thì sẽ cộng điểm...". We will allow either party to complete, or just owner. Let's allow either.
-    if (exchange.owner.toString() !== userId && exchange.requester.toString() !== userId) {
+    if (
+      exchange.owner.toString() !== userId &&
+      exchange.requester.toString() !== userId
+    ) {
       throw new BadRequestException('You are not part of this exchange');
     }
     if (exchange.status !== Exchange_Status.ACCEPTED) {
-      throw new BadRequestException('Exchange must be ACCEPTED before it can be completed');
+      throw new BadRequestException(
+        'Exchange must be ACCEPTED before it can be completed',
+      );
     }
 
     exchange.status = Exchange_Status.COMPLETED;
     await exchange.save();
 
     // Add points: Owner gets 50, Requester gets 25
-    await this.userModel.findByIdAndUpdate(exchange.owner.toString(), { $inc: { points: 50 } }).exec();
-    await this.userModel.findByIdAndUpdate(exchange.requester.toString(), { $inc: { points: 25 } }).exec();
+    await this.userModel
+      .findByIdAndUpdate(exchange.owner.toString(), { $inc: { points: 50 } })
+      .exec();
+    await this.userModel
+      .findByIdAndUpdate(exchange.requester.toString(), {
+        $inc: { points: 25 },
+      })
+      .exec();
 
     if (exchange.chatRoomId) {
       const msgContent = `Giao dịch thành công!`;
-      const sysMsg = await this.chatService.saveSystemMessage(exchange.chatRoomId.toString(), msgContent);
-      this.chatGateway.server.to(exchange.chatRoomId.toString()).emit('newMessage', sysMsg);
+      const sysMsg = await this.chatService.saveSystemMessage(
+        exchange.chatRoomId.toString(),
+        msgContent,
+      );
+      this.chatGateway.server
+        .to(exchange.chatRoomId.toString())
+        .emit('newMessage', sysMsg);
 
-      this.chatGateway.server.to(exchange.chatRoomId.toString()).emit('exchange_completed', {
-        exchangeId: exchange._id,
-        message: 'Hoàn tất giao dịch'
-      });
+      this.chatGateway.server
+        .to(exchange.chatRoomId.toString())
+        .emit('exchange_completed', {
+          exchangeId: exchange._id,
+          message: 'Hoàn tất giao dịch',
+        });
     }
 
     return exchange;

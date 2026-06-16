@@ -17,5 +17,19 @@ export class Location {
     ref: 'Location',
   })
   parent!: mongoose.Types.ObjectId;
+
+  @Prop({
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: false,
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      required: false,
+    },
+  })
+  geo?: { type: string; coordinates: number[] };
 }
 export const LocationSchema = SchemaFactory.createForClass(Location);
+LocationSchema.index({ geo: '2dsphere' });
