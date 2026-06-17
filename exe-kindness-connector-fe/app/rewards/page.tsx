@@ -258,12 +258,12 @@ export default function RewardsPage() {
                 onClick={handleBuyMembershipByMoney}
                 disabled={paying || isPremium}
               >
-                {paying ? "Đang xử lý..." : isPremium ? "Đang sử dụng" : "Thanh toán SePay"}
+                {paying ? "Đang xử lý..." : isPremium ? "Đang sử dụng" : "Thanh toán"}
                 {!isPremium && <ArrowRight size={18} />}
               </button>
             </div>
 
-            <p className={styles.errorText}>Thanh toán qua chuyển khoản ngân hàng bằng SePay. Membership sẽ được kích hoạt sau khi giao dịch được xác nhận.</p>
+            <p className={styles.errorText}>Thanh toán qua chuyển khoản ngân hàng. Membership sẽ được kích hoạt sau khi giao dịch được xác nhận.</p>
           </div>
         </div>
       </div>
@@ -279,7 +279,7 @@ export default function RewardsPage() {
               <Crown className={styles.crownIcon} size={28} />
               <h3>Thanh toán Membership PRO</h3>
             </div>
-            
+
             <div className={styles.modalBody}>
               <div className={styles.qrSection}>
                 <div className={styles.qrWrapper}>
@@ -290,7 +290,7 @@ export default function RewardsPage() {
 
               <div className={styles.infoSection}>
                 <h4 className={styles.infoTitle}>Thông tin chuyển khoản</h4>
-                
+
                 <div className={styles.infoGrid}>
                   <div className={styles.infoRow}>
                     <span className={styles.infoLabel}>Ngân hàng</span>
@@ -301,8 +301,8 @@ export default function RewardsPage() {
                     <span className={styles.infoLabel}>Số tài khoản</span>
                     <div className={styles.copyableValue}>
                       <span className={styles.infoValue}>{qrData.bankAccount}</span>
-                      <button 
-                        className={styles.copyBtn} 
+                      <button
+                        className={styles.copyBtn}
                         onClick={() => copyToClipboard(qrData.bankAccount, 'bankAccount')}
                       >
                         {copiedField === 'bankAccount' ? <Check size={16} className={styles.checkIcon} /> : <Copy size={16} />}
@@ -323,8 +323,8 @@ export default function RewardsPage() {
                       <span className={`${styles.infoValue} ${styles.invoiceCode}`}>
                         {qrData.orderInvoiceNumber}
                       </span>
-                      <button 
-                        className={styles.copyBtn} 
+                      <button
+                        className={styles.copyBtn}
                         onClick={() => copyToClipboard(qrData.orderInvoiceNumber, 'invoice')}
                       >
                         {copiedField === 'invoice' ? <Check size={16} className={styles.checkIcon} /> : <Copy size={16} />}
@@ -339,12 +339,12 @@ export default function RewardsPage() {
                 </div>
 
                 {/* Giả lập nút thanh toán cho môi trường thử nghiệm sandbox */}
-                <div className={styles.testSection}>
+                {/* <div className={styles.testSection}>
                   <p className={styles.testHelpText}>Bạn đang ở môi trường Test. Hãy nhấn nút dưới đây để giả lập chuyển khoản thành công:</p>
                   <button className={styles.simulateBtn} onClick={handleSimulatePayment}>
                     Giả lập chuyển khoản thành công (Test Sandbox)
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
