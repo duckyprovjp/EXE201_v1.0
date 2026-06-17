@@ -9,7 +9,11 @@ export class Review {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   reviewedUserId!: mongoose.Types.ObjectId;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Exchange', required: true })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Exchange',
+    required: true,
+  })
   exchangeId!: mongoose.Types.ObjectId;
 
   @Prop({ required: true, min: 1, max: 5 })

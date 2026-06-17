@@ -20,4 +20,4 @@ export class Conversation {
   @Prop()
   lastSentAt!: string;
 }
-export const ConversationSchema = SchemaFactory.createForClass(Conversation)
+export const ConversationSchema = SchemaFactory.createForClass(Conversation);

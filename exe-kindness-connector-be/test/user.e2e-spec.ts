@@ -26,10 +26,12 @@ describe('UserController (e2e)', () => {
     };
 
     await request(app.getHttpServer()).post('/auth/register').send(testUser);
-    const loginRes = await request(app.getHttpServer()).post('/auth/login').send({
-      email: testUser.email,
-      password: testUser.password,
-    });
+    const loginRes = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        email: testUser.email,
+        password: testUser.password,
+      });
     accessToken = loginRes.body.access_token;
   });
 

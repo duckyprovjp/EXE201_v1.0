@@ -11,7 +11,7 @@ import { User, UserSchema } from '../user/entities/user.entity';
   imports: [
     MongooseModule.forFeature([
       { name: Exchange.name, schema: ExchangeSchema },
-      { name: User.name, schema: UserSchema }
+      { name: User.name, schema: UserSchema },
     ]),
     ChatModule,
   ],

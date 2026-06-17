@@ -1,4 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateExchangeRecordDto } from './create-exchange_record.dto';
 
-export class UpdateExchangeRecordDto extends PartialType(CreateExchangeRecordDto) {}
+export class UpdateExchangeRecordDto extends PartialType(
+  CreateExchangeRecordDto,
+) {}

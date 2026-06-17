@@ -1,4 +1,13 @@
-import { Controller, Post, Get, Patch, Param, Body, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Patch,
+  Param,
+  Body,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { ExchangeService } from './exchange.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Exchange_Status } from '../../common/enums/status.enum';
@@ -10,7 +19,11 @@ export class ExchangeController {
 
   @Post()
   create(@Body() body: { bookId: string; ownerId: string }, @Req() req: any) {
-    return this.exchangeService.create(req.user.userId, body.bookId, body.ownerId);
+    return this.exchangeService.create(
+      req.user.userId,
+      body.bookId,
+      body.ownerId,
+    );
   }
 
   @Get()

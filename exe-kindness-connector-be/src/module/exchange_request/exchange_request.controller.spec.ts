@@ -9,9 +9,13 @@ describe('ExchangeRequestController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ExchangeRequestController],
       providers: [ExchangeRequestService],
-    }).useMocker(() => ({})).compile();
+    })
+      .useMocker(() => ({}))
+      .compile();
 
-    controller = module.get<ExchangeRequestController>(ExchangeRequestController);
+    controller = module.get<ExchangeRequestController>(
+      ExchangeRequestController,
+    );
   });
 
   it('should be defined', () => {

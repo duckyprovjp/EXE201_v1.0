@@ -9,7 +9,9 @@ describe('MessageStatusController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MessageStatusController],
       providers: [MessageStatusService],
-    }).useMocker(() => ({})).compile();
+    })
+      .useMocker(() => ({}))
+      .compile();
 
     controller = module.get<MessageStatusController>(MessageStatusController);
   });

@@ -9,7 +9,9 @@ describe('ExchangeRecordController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ExchangeRecordController],
       providers: [ExchangeRecordService],
-    }).useMocker(() => ({})).compile();
+    })
+      .useMocker(() => ({}))
+      .compile();
 
     controller = module.get<ExchangeRecordController>(ExchangeRecordController);
   });

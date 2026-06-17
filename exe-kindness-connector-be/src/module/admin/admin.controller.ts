@@ -4,7 +4,10 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../../common/enums/role.enum';
-import { Status_ACTIVE_LOCKED, Book_Status } from '../../common/enums/status.enum';
+import {
+  Status_ACTIVE_LOCKED,
+  Book_Status,
+} from '../../common/enums/status.enum';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -28,12 +31,18 @@ export class AdminController {
   }
 
   @Patch('users/:id/status')
-  updateUserStatus(@Param('id') id: string, @Body('status') status: Status_ACTIVE_LOCKED) {
+  updateUserStatus(
+    @Param('id') id: string,
+    @Body('status') status: Status_ACTIVE_LOCKED,
+  ) {
     return this.adminService.updateUserStatus(id, status);
   }
 
   @Patch('books/:id/status')
-  updateBookStatus(@Param('id') id: string, @Body('status') status: Book_Status) {
+  updateBookStatus(
+    @Param('id') id: string,
+    @Body('status') status: Book_Status,
+  ) {
     return this.adminService.updateBookStatus(id, status);
   }
 }

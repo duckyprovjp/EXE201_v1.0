@@ -7,7 +7,9 @@ describe('LocationService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [LocationService],
-    }).useMocker(() => ({})).compile();
+    })
+      .useMocker(() => ({}))
+      .compile();
 
     service = module.get<LocationService>(LocationService);
   });

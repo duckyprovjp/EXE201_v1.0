@@ -8,10 +8,10 @@ import { UserModule } from '../user/user.module';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Review.name, schema: ReviewSchema }]),
-    UserModule
+    UserModule,
   ],
   providers: [ReviewService],
   controllers: [ReviewController],
-  exports: [ReviewService]
+  exports: [ReviewService],
 })
 export class ReviewModule {}

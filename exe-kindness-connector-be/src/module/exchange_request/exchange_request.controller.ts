@@ -1,11 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ExchangeRequestService } from './exchange_request.service';
 import { CreateExchangeRequestDto } from './dto/create-exchange_request.dto';
 import { UpdateExchangeRequestDto } from './dto/update-exchange_request.dto';
 
 @Controller('exchange-request')
 export class ExchangeRequestController {
-  constructor(private readonly exchangeRequestService: ExchangeRequestService) {}
+  constructor(
+    private readonly exchangeRequestService: ExchangeRequestService,
+  ) {}
 
   @Post()
   create(@Body() createExchangeRequestDto: CreateExchangeRequestDto) {
@@ -23,7 +33,10 @@ export class ExchangeRequestController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateExchangeRequestDto: UpdateExchangeRequestDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateExchangeRequestDto: UpdateExchangeRequestDto,
+  ) {
     return this.exchangeRequestService.update(+id, updateExchangeRequestDto);
   }
 

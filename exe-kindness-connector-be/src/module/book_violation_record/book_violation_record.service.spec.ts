@@ -7,9 +7,13 @@ describe('BookViolationRecordService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [BookViolationRecordService],
-    }).useMocker(() => ({})).compile();
+    })
+      .useMocker(() => ({}))
+      .compile();
 
-    service = module.get<BookViolationRecordService>(BookViolationRecordService);
+    service = module.get<BookViolationRecordService>(
+      BookViolationRecordService,
+    );
   });
 
   it('should be defined', () => {

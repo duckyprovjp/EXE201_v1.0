@@ -1,11 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { MembershipRecordService } from './membership_record.service';
 import { CreateMembershipRecordDto } from './dto/create-membership_record.dto';
 import { UpdateMembershipRecordDto } from './dto/update-membership_record.dto';
 
 @Controller('membership-record')
 export class MembershipRecordController {
-  constructor(private readonly membershipRecordService: MembershipRecordService) {}
+  constructor(
+    private readonly membershipRecordService: MembershipRecordService,
+  ) {}
 
   @Post()
   create(@Body() createMembershipRecordDto: CreateMembershipRecordDto) {
@@ -23,7 +33,10 @@ export class MembershipRecordController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMembershipRecordDto: UpdateMembershipRecordDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateMembershipRecordDto: UpdateMembershipRecordDto,
+  ) {
     return this.membershipRecordService.update(+id, updateMembershipRecordDto);
   }
 

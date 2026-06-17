@@ -12,7 +12,7 @@ export class ReviewController {
     const reviewerId = req.user.userId;
     return this.reviewService.createReview({
       reviewerId,
-      ...body
+      ...body,
     });
   }
 }
