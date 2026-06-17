@@ -12,6 +12,12 @@ export class ChatController {
     return this.chatService.getRoomsForUser(req.user.userId);
   }
 
+  @Get('unread-count')
+  async getUnreadCount(@Req() req: any) {
+    const count = await this.chatService.getUnreadRoomsCount(req.user.userId);
+    return { count };
+  }
+
   @Get('rooms/:id/messages')
   getMessages(@Param('id') id: string) {
     return this.chatService.getMessagesForRoom(id);

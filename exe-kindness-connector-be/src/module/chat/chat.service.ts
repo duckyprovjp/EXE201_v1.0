@@ -85,4 +85,18 @@ export class ChatService {
       isSystem: true,
     });
   }
+
+  async getUnreadRoomsCount(userId: string): Promise<number> {
+    const rooms = await this.chatRoomModel.find({ participants: userId }, { _id: 1 });
+    const roomIds = rooms.map(r => r._id);
+
+    const unreadRoomIds = await this.messageModel.distinct('roomId', {
+      roomId: { $in: roomIds },
+      senderId: { $ne: new mongoose.Types.ObjectId(userId) },
+      status: { $ne: Message_Status.SEEN },
+      isSystem: { $ne: true }
+    });
+
+    return unreadRoomIds.length;
+  }
 }
