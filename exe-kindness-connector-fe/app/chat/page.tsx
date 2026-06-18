@@ -280,7 +280,11 @@ function ChatComponent() {
                 <div className={styles.chatActions}>
                   {activeRoom.activeExchange?.status === 'ACCEPTED' && (
                     <>
-                      <button className={styles.completeBtn} onClick={handleCompleteExchange}>Hoàn tất giao dịch</button>
+                      {(typeof activeRoom.activeExchange.owner === 'string'
+                        ? activeRoom.activeExchange.owner === userId
+                        : activeRoom.activeExchange.owner?._id === userId) && (
+                        <button className={styles.completeBtn} onClick={handleCompleteExchange}>Hoàn tất giao dịch</button>
+                      )}
                       <button className={styles.cancelBtn} onClick={handleCancelExchange}>Hủy giao dịch</button>
                     </>
                   )}

@@ -37,15 +37,23 @@ export class ChatService {
   }
 
   async getRoomsForUser(userId: string) {
-    return this.chatRoomModel
+    const rooms = await this.chatRoomModel
       .find({ participants: userId })
       .populate('participants', 'fullName avatar')
       .populate({
         path: 'activeExchange',
-        select: 'status book',
+        select: 'status book owner requester',
         populate: { path: 'book', select: 'title images' },
       })
       .sort({ updatedAt: -1 });
+
+    return rooms.filter(room => {
+      if (room.activeExchange) {
+        const exchange = room.activeExchange as any;
+        return exchange.status !== 'PENDING' && exchange.status !== 'REJECTED';
+      }
+      return false;
+    });
   }
 
   async getMessagesForRoom(roomId: string) {
@@ -77,6 +85,16 @@ export class ChatService {
           'Giao dịch đã kết thúc, bạn không thể gửi thêm tin nhắn.',
         );
       }
+      if (exchangeStatus === 'PENDING') {
+        throw new Error(
+          'Giao dịch chưa được chấp nhận, bạn chưa thể gửi tin nhắn.',
+        );
+      }
+      if (exchangeStatus === 'REJECTED') {
+        throw new Error(
+          'Yêu cầu giao dịch đã bị từ chối.',
+        );
+      }
     }
 
     return this.messageModel.create({
@@ -95,11 +113,22 @@ export class ChatService {
   }
 
   async getUnreadRoomsCount(userId: string): Promise<number> {
-    const rooms = await this.chatRoomModel.find({ participants: userId }, { _id: 1 });
-    const roomIds = rooms.map(r => r._id);
+    const rooms = await this.chatRoomModel
+      .find({ participants: userId })
+      .populate('activeExchange', 'status');
+
+    const validRoomIds = rooms
+      .filter(room => {
+        if (room.activeExchange) {
+          const exchange = room.activeExchange as any;
+          return exchange.status !== 'PENDING' && exchange.status !== 'REJECTED';
+        }
+        return false;
+      })
+      .map(r => r._id);
 
     const unreadRoomIds = await this.messageModel.distinct('roomId', {
-      roomId: { $in: roomIds },
+      roomId: { $in: validRoomIds },
       senderId: { $ne: new mongoose.Types.ObjectId(userId) },
       status: { $ne: Message_Status.SEEN },
       isSystem: { $ne: true }

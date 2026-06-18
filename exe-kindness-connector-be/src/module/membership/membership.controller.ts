@@ -6,6 +6,10 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
+  HttpCode,
+  Headers,
 } from '@nestjs/common';
 import { MembershipService } from './membership.service';
 import { CreateMembershipDto } from './dto/create-membership.dto';

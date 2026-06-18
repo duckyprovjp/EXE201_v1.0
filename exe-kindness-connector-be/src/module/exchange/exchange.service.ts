@@ -161,13 +161,10 @@ export class ExchangeService {
     const exchange = await this.exchangeModel.findById(exchangeId);
     if (!exchange) throw new NotFoundException('Exchange not found');
 
-    // Only owner can complete? Or both? Let's say either can complete, or maybe owner only.
-    // The requirement says "nếu hoàn tất giao dịch thì sẽ cộng điểm...". We will allow either party to complete, or just owner. Let's allow either.
-    if (
-      exchange.owner.toString() !== userId &&
-      exchange.requester.toString() !== userId
-    ) {
-      throw new BadRequestException('You are not part of this exchange');
+    if (exchange.owner.toString() !== userId) {
+      throw new BadRequestException(
+        'Only the book owner can complete the exchange',
+      );
     }
     if (exchange.status !== Exchange_Status.ACCEPTED) {
       throw new BadRequestException(
