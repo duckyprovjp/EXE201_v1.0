@@ -8,8 +8,13 @@ import {
   Delete,
   UseGuards,
   Req,
+<<<<<<< HEAD
   HttpCode,
   Headers,
+=======
+  Headers,
+  HttpCode,
+>>>>>>> d1ac9bd65471f1a8815a5e7e08401d23227e3d20
 } from '@nestjs/common';
 import { MembershipService } from './membership.service';
 import { CreateMembershipDto } from './dto/create-membership.dto';
@@ -18,7 +23,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('membership')
 export class MembershipController {
-  constructor(private readonly membershipService: MembershipService) {}
+  constructor(private readonly membershipService: MembershipService) { }
 
   @UseGuards(JwtAuthGuard)
   @Post('checkout')
